@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>FX収支管理</title>
+    <style>
+        :root { --main-bg: #f0f2f5; --card-bg: #ffffff; --primary: #3498db; --negative: #e74c3c; --positive: #27ae60; --dark: #2c3e50; }
+        
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: var(--main-bg); color: #333; margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; -webkit-tap-highlight-color: transparent; }
+        
+        h1 { font-size: 1.5rem; color: var(--dark); margin: 10px 0; }
+        
+        .calendar-nav { display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 500px; margin-bottom: 10px; }
+        .nav-btn { background: var(--card-bg); border: none; padding: 12px 20px; border-radius: 10px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.1); cursor: pointer; }
+        #calendarHeader { font-size: 1.2rem; font-weight: bold; }
+
+        .calendar-container { background: var(--card-bg); padding: 10px; border-radius: 15px; width: 100%; max-width: 500px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); box-sizing: border-box; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background-color: #eee; border-radius: 8px; overflow: hidden; border: 1px solid #eee; }
+        
+        .day-header { background: #f8f9fa; font-size: 0.75rem; font-weight: bold; padding: 8px 0; text-align: center; }
+        .day-header:nth-child(1) { color: var(--negative); } 
+        .day-header:nth-child(7) { color: var(--primary); } 
+
+        .day { background: white; aspect-ratio: 1 / 1.3; display: flex; flex-direction: column; padding: 4px; cursor: pointer; position: relative; justify-content: flex-start; }
+        .day.other-month { background-color: #fafafa; color: #ccc; pointer-events: none; }
+        
+        .date-num { font-size: 0.75rem; font-weight: bold; color: #7f8c8d; margin-bottom: 2px; }
+        
+        .data-container { display: flex; flex-direction: column; align-items: flex-end; justify-content: center; flex-grow: 1; }
+        .day-data { text-align: right; width: 100%; line-height: 1.2; transition: all 0.2s; }
+        
+        .val-trades { font-size: 0.55rem; color: #7f8c8d; margin-bottom: 2px; }
+        .val-pips { font-size: 0.65rem; color: var(--positive); margin-bottom: 2px; }
+        .val-amount { font-size: 0.85rem; color: var(--dark); font-weight: bold; }
+        
+        /* pipsのみモードの強調スタイル */
+        .mode-pips-only .val-pips { font-size: 0.8rem; font-weight: bold; text-align: center; }
+        .mode-pips-only .data-container { align-items: center; }
+
+        .negative { color: var(--negative) !important; }
+
+        .summary { margin-top: 15px; background: var(--dark); color: white; padding: 15px; border-radius: 12px; width: 100%; max-width: 500px; display: flex; justify-content: space-around; box-sizing: border-box; }
+        .summary-item { text-align: center; flex: 1; }
+        .summary-label { font-size: 0.65rem; opacity: 0.8; display: block; }
+        .summary-value { font-size: 1.2rem; font-weight: bold; margin-top: 4px; display: block; }
+
+        .action-group { margin-top: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; max-width: 500px; }
+        .btn { border: none; padding: 15px; border-radius: 10px; cursor: pointer; font-size: 0.9rem; color: white; font-weight: bold; text-align: center; }
+        .toggle-btn { background: #7f8c8d; grid-column: span 2; }
+        .export-btn { background: var(--positive); }
+        .import-btn { background: #e67e22; }
+
+        #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; }
+        .modal-content { background: white; padding: 25px; border-radius: 20px; width: 85%; max-width: 320px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+        input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; font-size: 1.1rem; appearance: none; }
+        .btn-group { display: flex; gap: 10px; margin-top: 20px; }
+        .modal-btn { flex: 1; padding: 15px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 1rem; }
+        .save-btn { background: var(--primary); color: white; }
+        .cancel-btn { background: #eee; color: #333; }
+        
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <h1>FX収支管理</h1>
+
+    <div class="calendar-nav">
+        <button class="nav-btn" onclick="changeMonth(-1)">◀</button>
+        <div id="calendarHeader"></div>
+        <button class="nav-btn" onclick="changeMonth(1)">▶</button>
+    </div>
+
+    <div class="calendar-container">
+        <div class="calendar-grid" id="calendarGrid">
+            <div class="day-header">日</div><div class="day-header">月</div><div class="day-header">火</div>
+            <div class="day-header">水</div><div class="day-header">木</div><div class="day-header">金</div>
+            <div class="day-header">土</div>
+        </div>
+    </div>
+
+    <div class="summary">
+        <div class="summary-item" id="summaryTrades">
+            <span class="summary-label">トレード回数</span>
+            <span id="totalTrades" class="summary-value">0回</span>
+        </div>
+        <div class="summary-item" id="summaryPips">
+            <span class="summary-label">合計pips</span>
+            <span id="totalPips" class="summary-value">0.0</span>
+        </div>
+        <div class="summary-item" id="summaryAmount">
+            <span class="summary-label">今月の収支</span>
+            <span id="totalAmount" class="summary-value">¥0</span>
+        </div>
+    </div>
+
+    <div class="action-group">
+        <button class="btn toggle-btn" onclick="cycleDisplayMode()">表示切替</button>
+        <button class="btn export-btn" onclick="exportCSV()">CSVファイル出力</button>
+        <button class="btn import-btn" onclick="document.getElementById('importFile').click()">CSVから復元</button>
+        <input type="file" id="importFile" style="display:none" accept=".csv" onchange="importCSV(this)">
+    </div>
+
+    <div id="modal" onclick="if(event.target==this)closeModal()">
+        <div class="modal-content">
+            <h3 id="selectedDateText">記録</h3>
+            <label style="font-size:0.75rem; color:#666;">トレード回数</label>
+            <input type="number" id="tradesInput" inputmode="numeric" placeholder="0">
+            <label style="font-size:0.75rem; color:#666;">獲得pips</label>
+            <input type="number" id="pipsInput" step="0.1" inputmode="decimal" placeholder="0.0">
+            <label style="font-size:0.75rem; color:#666;">当日収支</label>
+            <input type="number" id="amountInput" inputmode="numeric" placeholder="0">
+            <div class="btn-group">
+                <button class="modal-btn save-btn" onclick="saveData()">保存</button>
+                <button class="modal-btn cancel-btn" onclick="closeModal()">戻る</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentData = JSON.parse(localStorage.getItem('fx_data_pro')) || {};
+        let displayMode = parseInt(localStorage.getItem('display_mode')) || 0;
+        let viewDate = new Date(); 
+        let selectedDateKey = "";
+
+        function renderCalendar() {
+            const year = viewDate.getFullYear();
+            const month = viewDate.getMonth();
+            document.getElementById('calendarHeader').innerText = `${year}年 ${month + 1}月`;
+            const grid = document.getElementById('calendarGrid');
+            const headers = Array.from(grid.querySelectorAll('.day-header'));
+            grid.innerHTML = "";
+            headers.forEach(h => grid.appendChild(h));
+
+            // pipsのみモード(Mode 2)の場合、親要素にクラスを付与してCSSを切り替え
+            if (displayMode === 2) {
+                grid.classList.add('mode-pips-only');
+            } else {
+                grid.classList.remove('mode-pips-only');
+            }
+
+            const firstDay = new Date(year, month, 1).getDay();
+            const lastDate = new Date(year, month + 1, 0).getDate();
+
+            for (let i = 0; i < firstDay; i++) {
+                const empty = document.createElement('div');
+                empty.className = 'day other-month';
+                grid.appendChild(empty);
+            }
+
+            for (let d = 1; d <= lastDate; d++) {
+                const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+                const dayDiv = document.createElement('div');
+                dayDiv.className = 'day';
+                
+                let html = `<span class="date-num">${d}</span>`;
+                if (currentData[dateKey]) {
+                    const trades = currentData[dateKey].trades || 0;
+                    const pips = currentData[dateKey].pips || 0;
+                    const amt = currentData[dateKey].amount || 0;
+                    
+                    const showTrades = (displayMode === 0);
+                    const showPips = (displayMode === 0 || displayMode === 1 || displayMode === 2);
+                    const showAmount = (displayMode === 0 || displayMode === 1 || displayMode === 3);
+
+                    html += `
+                        <div class="data-container">
+                            <div class="day-data val-trades ${showTrades ? '' : 'hidden'}">${trades}回</div>
+                            <div class="day-data val-pips ${pips < 0 ? 'negative' : ''} ${showPips ? '' : 'hidden'}">${pips}pips</div>
+                            <div class="day-data val-amount ${amt < 0 ? 'negative' : ''} ${showAmount ? '' : 'hidden'}">${amt.toLocaleString()}</div>
+                        </div>
+                    `;
+                }
+                dayDiv.innerHTML = html;
+                dayDiv.onclick = () => openModal(dateKey);
+                grid.appendChild(dayDiv);
+            }
+            updateSummary();
+            updateUI();
+        }
+
+        function cycleDisplayMode() {
+            displayMode = (displayMode + 1) % 4;
+            localStorage.setItem('display_mode', displayMode);
+            renderCalendar();
+        }
+
+        function updateUI() {
+            const sTrades = document.getElementById('summaryTrades');
+            const sPips = document.getElementById('summaryPips');
+            const sAmt = document.getElementById('summaryAmount');
+
+            displayMode === 0 ? sTrades.classList.remove('hidden') : sTrades.classList.add('hidden');
+            (displayMode === 0 || displayMode === 1 || displayMode === 2) ? sPips.classList.remove('hidden') : sPips.classList.add('hidden');
+            (displayMode === 0 || displayMode === 1 || displayMode === 3) ? sAmt.classList.remove('hidden') : sAmt.classList.add('hidden');
+        }
+
+        function changeMonth(diff) { viewDate.setMonth(viewDate.getMonth() + diff); renderCalendar(); }
+        
+        function openModal(dateKey) {
+            selectedDateKey = dateKey;
+            document.getElementById('selectedDateText').innerText = `${dateKey.split('-')[2]}日の記録`;
+            document.getElementById('tradesInput').value = currentData[dateKey]?.trades || "";
+            document.getElementById('pipsInput').value = currentData[dateKey]?.pips || "";
+            document.getElementById('amountInput').value = currentData[dateKey]?.amount || "";
+            document.getElementById('modal').style.display = 'flex';
+        }
+
+        function closeModal() { document.getElementById('modal').style.display = 'none'; }
+
+        function saveData() {
+            const trades = parseInt(document.getElementById('tradesInput').value);
+            const pips = parseFloat(document.getElementById('pipsInput').value);
+            const amount = parseInt(document.getElementById('amountInput').value);
+            if (isNaN(trades) && isNaN(pips) && isNaN(amount)) { delete currentData[selectedDateKey]; } 
+            else { currentData[selectedDateKey] = { trades: trades || 0, pips: pips || 0, amount: amount || 0 }; }
+            localStorage.setItem('fx_data_pro', JSON.stringify(currentData));
+            closeModal();
+            renderCalendar();
+        }
+
+        function updateSummary() {
+            let tT = 0, tP = 0, tA = 0;
+            const ym = `${viewDate.getFullYear()}-${String(viewDate.getMonth() + 1).padStart(2, '0')}`;
+            Object.keys(currentData).forEach(k => {
+                if (k.startsWith(ym)) {
+                    tT += (currentData[k].trades || 0);
+                    tP += (currentData[k].pips || 0);
+                    tA += (currentData[k].amount || 0);
+                }
+            });
+            document.getElementById('totalTrades').innerText = `${tT}回`;
+            document.getElementById('totalPips').innerText = `${tP.toFixed(1)}pips`;
+            const aEl = document.getElementById('totalAmount');
+            aEl.innerText = `¥${tA.toLocaleString()}`;
+            aEl.className = `summary-value ${tA < 0 ? 'negative' : ''}`;
+        }
+
+        function exportCSV() {
+            let csv = "\uFEFF日付,トレード回数,獲得pips,当日収支\n";
+            Object.keys(currentData).sort().forEach(k => {
+                csv += `${k},${currentData[k].trades || 0},${currentData[k].pips},${currentData[k].amount}\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = `FX収支_${new Date().toISOString().slice(0,10)}.csv`;
+            link.click();
+        }
+
+        function importCSV(input) {
+            const file = input.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const text = e.target.result;
+                const lines = text.split("\n");
+                const newData = {};
+                for (let i = 1; i < lines.length; i++) {
+                    const cols = lines[i].split(",");
+                    if (cols.length >= 4) {
+                        const date = cols[0].replace("\uFEFF", "").trim();
+                        newData[date] = { trades: parseInt(cols[1]) || 0, pips: parseFloat(cols[2]) || 0, amount: parseInt(cols[3]) || 0 };
+                    }
+                }
+                if (Object.keys(newData).length > 0) {
+                    if(confirm("データを復元しますか？")) {
+                        currentData = newData;
+                        localStorage.setItem('fx_data_pro', JSON.stringify(currentData));
+                        renderCalendar();
+                    }
+                }
+            };
+            reader.readAsText(file);
+            input.value = "";
+        }
+        renderCalendar();
+    </script>
+</body>
+</html>
