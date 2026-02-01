@@ -20,16 +20,13 @@
         #calendarHeader { font-size: 1.1rem; font-weight: bold; }
 
         .calendar-container { background: var(--card-bg); padding: 5px; border-radius: 12px; width: 100%; max-width: 500px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); box-sizing: border-box; overflow: hidden; }
-        
-        /* カレンダーグリッドの幅を固定 */
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background-color: #eee; border-radius: 8px; overflow: hidden; border: 1px solid #eee; width: 100%; }
         
         .day-header { background: #f8f9fa; font-size: 0.7rem; font-weight: bold; padding: 6px 0; text-align: center; }
         .day-header:nth-child(1) { color: var(--negative); } 
         .day-header:nth-child(7) { color: var(--primary); } 
 
-        /* 左右の余白を5pxに設定 */
-        .day { background: white; aspect-ratio: 1 / 1.35; display: flex; flex-direction: column; padding: 2px 4px; cursor: pointer; position: relative; justify-content: flex-start; overflow: hidden; box-sizing: border-box; }
+        .day { background: white; aspect-ratio: 1 / 1.35; display: flex; flex-direction: column; padding: 2px 5px; cursor: pointer; position: relative; justify-content: flex-start; overflow: hidden; box-sizing: border-box; }
         .day.other-month { background-color: #fafafa; color: #ccc; pointer-events: none; }
         
         .date-num { font-size: 0.7rem; font-weight: bold; color: #7f8c8d; margin-bottom: 1px; }
@@ -41,7 +38,6 @@
         .val-pips { font-size: 0.6rem; color: var(--positive); }
         .val-amount { font-size: 0.8rem; color: var(--dark); font-weight: bold; }
         
-        /* 6桁以上などの場合の縮小フォント */
         .small-font { font-size: 0.65rem !important; }
 
         .mode-pips-only .val-pips { font-size: 0.8rem; font-weight: bold; text-align: center; }
@@ -120,16 +116,21 @@
     <div id="modal" onclick="if(event.target==this)closeModal()">
         <div class="modal-content">
             <h3 id="selectedDateText">記録</h3>
+            
             <label>トレード回数</label>
             <input type="number" id="tradesInput" inputmode="numeric" placeholder="0">
+            
             <label>獲得pips</label>
             <input type="number" id="pipsInput" step="0.1" inputmode="decimal" placeholder="0.0" oninput="calculateLot()">
+            
             <label>当日収支</label>
             <input type="number" id="amountInput" inputmode="numeric" placeholder="0" oninput="calculateLot()">
+            
             <div class="lot-display-group">
                 <span class="lot-label">平均ロット</span>
                 <span id="autoLotResult" class="lot-value">---</span>
             </div>
+
             <div class="btn-group">
                 <button class="modal-btn save-btn" onclick="saveData()">保存</button>
                 <button class="modal-btn cancel-btn" onclick="closeModal()">戻る</button>
@@ -186,7 +187,6 @@
                     const trades = currentData[dateKey].trades || 0;
                     const pips = currentData[dateKey].pips || 0;
                     const amt = currentData[dateKey].amount || 0;
-                    
                     const needsSmallFont = Math.abs(amt) >= 100000 ? 'small-font' : '';
 
                     html += `
@@ -222,9 +222,16 @@
 
         function changeMonth(diff) { viewDate.setMonth(viewDate.getMonth() + diff); renderCalendar(); }
         
+        // モーダルオープン時のタイトル修正箇所
         function openModal(dateKey) {
             selectedDateKey = dateKey;
-            document.getElementById('selectedDateText').innerText = `${dateKey.split('-')[2]}日の記録`;
+            const parts = dateKey.split('-'); // ["2026", "02", "01"] の形
+            const month = parseInt(parts[1]);
+            const day = parseInt(parts[2]);
+            
+            // タイトルを「〇月〇日」に変更
+            document.getElementById('selectedDateText').innerText = `${month}月${day}日`;
+            
             document.getElementById('tradesInput').value = currentData[dateKey]?.trades || "";
             document.getElementById('pipsInput').value = currentData[dateKey]?.pips || "";
             document.getElementById('amountInput').value = currentData[dateKey]?.amount || "";
@@ -304,8 +311,3 @@
     </script>
 </body>
 </html>
-
-
-
-
-
