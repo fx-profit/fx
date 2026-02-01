@@ -281,20 +281,23 @@
         }
 
         // --- グラフ機能の追加 ---
-// --- グラフ機能の修正版 ---
-        function showGraph() {
+function showGraph() {
             const year = viewDate.getFullYear();
             const month = viewDate.getMonth();
             const lastDate = new Date(year, month + 1, 0).getDate();
             const labels = [];
             const dataPoints = [];
             let cumulativeBalance = 0;
+            let hasData = false; // データが存在するかチェック
 
             for (let d = 1; d <= lastDate; d++) {
                 const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-                // "日"を削除して数字だけに修正
-                labels.push(d); 
-                cumulativeBalance += (currentData[dateKey]?.amount || 0);
+                labels.push(d);
+                
+                const dayAmount = currentData[dateKey]?.amount || 0;
+                if (currentData[dateKey]) hasData = true; // 0円入力でもデータがあれば有りとみなす
+                
+                cumulativeBalance += dayAmount;
                 dataPoints.push(cumulativeBalance);
             }
 
@@ -326,18 +329,24 @@
                     },
                     scales: {
                         y: {
-                            beginAtZero: true, // 軸を0から開始するように固定
+                            beginAtZero: true,
+                            // データがない場合に備えて表示範囲を0付近に固定
+                            suggestedMin: 0,
+                            suggestedMax: hasData ? undefined : 10, // データがない時は10を上限に（目盛りは0のみになる）
                             grid: { color: '#eee' },
                             ticks: { 
-                                callback: value => '¥' + value.toLocaleString() 
+                                callback: function(value) {
+                                    if (value === 0) return '¥0';
+                                    return hasData ? '¥' + value.toLocaleString() : '';
+                                }
                             }
                         },
                         x: { 
                             grid: { display: false },
                             ticks: {
-                                maxRotation: 0, // ラベルを回転させない
-                                autoSkip: true, // 数が多い場合に自動で間引く
-                                maxTicksLimit: 10 // 表示するラベルの最大数
+                                maxRotation: 0,
+                                autoSkip: true,
+                                maxTicksLimit: 10 
                             }
                         }
                     }
