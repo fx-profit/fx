@@ -11,45 +11,51 @@
     <style>
         :root { --main-bg: #f0f2f5; --card-bg: #ffffff; --primary: #3498db; --negative: #e74c3c; --positive: #27ae60; --dark: #2c3e50; }
         
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: var(--main-bg); color: #333; margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; -webkit-tap-highlight-color: transparent; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: var(--main-bg); color: #333; margin: 0; padding: 5px; display: flex; flex-direction: column; align-items: center; -webkit-tap-highlight-color: transparent; }
         
-        h1 { font-size: 1.5rem; color: var(--dark); margin: 10px 0; }
+        h1 { font-size: 1.4rem; color: var(--dark); margin: 8px 0; }
         
-        .calendar-nav { display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 500px; margin-bottom: 10px; }
-        .nav-btn { background: var(--card-bg); border: none; padding: 12px 20px; border-radius: 10px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.1); cursor: pointer; }
-        #calendarHeader { font-size: 1.2rem; font-weight: bold; }
+        .calendar-nav { display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 500px; margin-bottom: 8px; }
+        .nav-btn { background: var(--card-bg); border: none; padding: 10px 18px; border-radius: 10px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.1); cursor: pointer; }
+        #calendarHeader { font-size: 1.1rem; font-weight: bold; }
 
-        .calendar-container { background: var(--card-bg); padding: 10px; border-radius: 15px; width: 100%; max-width: 500px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); box-sizing: border-box; }
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background-color: #eee; border-radius: 8px; overflow: hidden; border: 1px solid #eee; }
+        .calendar-container { background: var(--card-bg); padding: 5px; border-radius: 12px; width: 100%; max-width: 500px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); box-sizing: border-box; overflow: hidden; }
         
-        .day-header { background: #f8f9fa; font-size: 0.75rem; font-weight: bold; padding: 8px 0; text-align: center; }
+        /* カレンダーグリッドの幅を固定 */
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background-color: #eee; border-radius: 8px; overflow: hidden; border: 1px solid #eee; width: 100%; }
+        
+        .day-header { background: #f8f9fa; font-size: 0.7rem; font-weight: bold; padding: 6px 0; text-align: center; }
         .day-header:nth-child(1) { color: var(--negative); } 
         .day-header:nth-child(7) { color: var(--primary); } 
 
-        .day { background: white; aspect-ratio: 1 / 1.3; display: flex; flex-direction: column; padding: 4px; cursor: pointer; position: relative; justify-content: flex-start; }
+        /* 左右の余白を5pxに設定 */
+        .day { background: white; aspect-ratio: 1 / 1.35; display: flex; flex-direction: column; padding: 2px 5px; cursor: pointer; position: relative; justify-content: flex-start; overflow: hidden; box-sizing: border-box; }
         .day.other-month { background-color: #fafafa; color: #ccc; pointer-events: none; }
         
-        .date-num { font-size: 0.75rem; font-weight: bold; color: #7f8c8d; margin-bottom: 2px; }
+        .date-num { font-size: 0.7rem; font-weight: bold; color: #7f8c8d; margin-bottom: 1px; }
         
-        .data-container { display: flex; flex-direction: column; align-items: flex-end; justify-content: center; flex-grow: 1; }
-        .day-data { text-align: right; width: 100%; line-height: 1.2; transition: all 0.2s; }
+        .data-container { display: flex; flex-direction: column; align-items: flex-end; justify-content: center; flex-grow: 1; width: 100%; overflow: hidden; }
+        .day-data { text-align: right; width: 100%; line-height: 1.1; white-space: nowrap; letter-spacing: -0.02em; }
         
-        .val-trades { font-size: 0.55rem; color: #7f8c8d; margin-bottom: 2px; }
-        .val-pips { font-size: 0.65rem; color: var(--positive); margin-bottom: 2px; }
-        .val-amount { font-size: 0.85rem; color: var(--dark); font-weight: bold; }
+        .val-trades { font-size: 0.5rem; color: #7f8c8d; }
+        .val-pips { font-size: 0.6rem; color: var(--positive); }
+        .val-amount { font-size: 0.8rem; color: var(--dark); font-weight: bold; }
         
+        /* 6桁以上などの場合の縮小フォント */
+        .small-font { font-size: 0.75rem !important; }
+
         .mode-pips-only .val-pips { font-size: 0.8rem; font-weight: bold; text-align: center; }
         .mode-pips-only .data-container { align-items: center; }
 
         .negative { color: var(--negative) !important; }
 
-        .summary { margin-top: 15px; background: var(--dark); color: white; padding: 15px; border-radius: 12px; width: 100%; max-width: 500px; display: flex; justify-content: space-around; box-sizing: border-box; }
+        .summary { margin-top: 12px; background: var(--dark); color: white; padding: 12px; border-radius: 12px; width: 100%; max-width: 500px; display: flex; justify-content: space-around; box-sizing: border-box; }
         .summary-item { text-align: center; flex: 1; }
-        .summary-label { font-size: 0.65rem; opacity: 0.8; display: block; }
-        .summary-value { font-size: 1.2rem; font-weight: bold; margin-top: 4px; display: block; }
+        .summary-label { font-size: 0.6rem; opacity: 0.8; display: block; }
+        .summary-value { font-size: 1.1rem; font-weight: bold; margin-top: 4px; display: block; }
 
-        .action-group { margin-top: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; max-width: 500px; }
-        .btn { border: none; padding: 15px; border-radius: 10px; cursor: pointer; font-size: 0.9rem; color: white; font-weight: bold; text-align: center; }
+        .action-group { margin-top: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; max-width: 500px; }
+        .btn { border: none; padding: 14px; border-radius: 10px; cursor: pointer; font-size: 0.85rem; color: white; font-weight: bold; text-align: center; }
         .toggle-btn { background: #7f8c8d; grid-column: span 2; }
         .export-btn { background: var(--positive); }
         .import-btn { background: #e67e22; }
@@ -106,29 +112,24 @@
 
     <div class="action-group">
         <button class="btn toggle-btn" onclick="cycleDisplayMode()">表示切替</button>
-        <button class="btn export-btn" onclick="exportCSV()">CSVファイル出力</button>
-        <button class="btn import-btn" onclick="document.getElementById('importFile').click()">CSVから復元</button>
+        <button class="btn export-btn" onclick="exportCSV()">CSV出力</button>
+        <button class="btn import-btn" onclick="document.getElementById('importFile').click()">CSV復元</button>
         <input type="file" id="importFile" style="display:none" accept=".csv" onchange="importCSV(this)">
     </div>
 
     <div id="modal" onclick="if(event.target==this)closeModal()">
         <div class="modal-content">
             <h3 id="selectedDateText">記録</h3>
-            
             <label>トレード回数</label>
             <input type="number" id="tradesInput" inputmode="numeric" placeholder="0">
-            
             <label>獲得pips</label>
             <input type="number" id="pipsInput" step="0.1" inputmode="decimal" placeholder="0.0" oninput="calculateLot()">
-            
             <label>当日収支</label>
             <input type="number" id="amountInput" inputmode="numeric" placeholder="0" oninput="calculateLot()">
-            
             <div class="lot-display-group">
                 <span class="lot-label">平均ロット</span>
                 <span id="autoLotResult" class="lot-value">---</span>
             </div>
-
             <div class="btn-group">
                 <button class="modal-btn save-btn" onclick="saveData()">保存</button>
                 <button class="modal-btn cancel-btn" onclick="closeModal()">戻る</button>
@@ -146,11 +147,8 @@
             const pips = Math.abs(parseFloat(document.getElementById('pipsInput').value));
             const amount = Math.abs(parseInt(document.getElementById('amountInput').value));
             const resultEl = document.getElementById('autoLotResult');
-
             if (pips > 0 && amount > 0) {
-                const pipValue = amount / pips;
-                // 1ロット=1万通貨(1pip=100円)想定で計算し、四捨五入して整数に
-                const lotEst = Math.round(pipValue / 100);
+                const lotEst = Math.round((amount / pips) / 100);
                 resultEl.innerText = `${lotEst} Lot`;
             } else {
                 resultEl.innerText = "---";
@@ -166,11 +164,8 @@
             grid.innerHTML = "";
             headers.forEach(h => grid.appendChild(h));
 
-            if (displayMode === 2) {
-                grid.classList.add('mode-pips-only');
-            } else {
-                grid.classList.remove('mode-pips-only');
-            }
+            if (displayMode === 2) grid.classList.add('mode-pips-only');
+            else grid.classList.remove('mode-pips-only');
 
             const firstDay = new Date(year, month, 1).getDay();
             const lastDate = new Date(year, month + 1, 0).getDate();
@@ -192,15 +187,13 @@
                     const pips = currentData[dateKey].pips || 0;
                     const amt = currentData[dateKey].amount || 0;
                     
-                    const showTrades = (displayMode === 0);
-                    const showPips = (displayMode === 0 || displayMode === 1 || displayMode === 2);
-                    const showAmount = (displayMode === 0 || displayMode === 1 || displayMode === 3);
+                    const needsSmallFont = Math.abs(amt) >= 100000 ? 'small-font' : '';
 
                     html += `
                         <div class="data-container">
-                            <div class="day-data val-trades ${showTrades ? '' : 'hidden'}">${trades}回</div>
-                            <div class="day-data val-pips ${pips < 0 ? 'negative' : ''} ${showPips ? '' : 'hidden'}">${pips}pips</div>
-                            <div class="day-data val-amount ${amt < 0 ? 'negative' : ''} ${showAmount ? '' : 'hidden'}">${amt.toLocaleString()}</div>
+                            <div class="day-data val-trades ${displayMode === 0 ? '' : 'hidden'}">${trades}回</div>
+                            <div class="day-data val-pips ${pips < 0 ? 'negative' : ''} ${displayMode <= 2 ? '' : 'hidden'}">${pips}pips</div>
+                            <div class="day-data val-amount ${amt < 0 ? 'negative' : ''} ${needsSmallFont} ${displayMode === 0 || displayMode === 1 || displayMode === 3 ? '' : 'hidden'}">${amt.toLocaleString()}</div>
                         </div>
                     `;
                 }
@@ -222,9 +215,8 @@
             const sTrades = document.getElementById('summaryTrades');
             const sPips = document.getElementById('summaryPips');
             const sAmt = document.getElementById('summaryAmount');
-
             displayMode === 0 ? sTrades.classList.remove('hidden') : sTrades.classList.add('hidden');
-            (displayMode === 0 || displayMode === 1 || displayMode === 2) ? sPips.classList.remove('hidden') : sPips.classList.add('hidden');
+            (displayMode <= 2) ? sPips.classList.remove('hidden') : sPips.classList.add('hidden');
             (displayMode === 0 || displayMode === 1 || displayMode === 3) ? sAmt.classList.remove('hidden') : sAmt.classList.add('hidden');
         }
 
@@ -246,8 +238,8 @@
             const trades = parseInt(document.getElementById('tradesInput').value);
             const pips = parseFloat(document.getElementById('pipsInput').value);
             const amount = parseInt(document.getElementById('amountInput').value);
-            if (isNaN(trades) && isNaN(pips) && isNaN(amount)) { delete currentData[selectedDateKey]; } 
-            else { currentData[selectedDateKey] = { trades: trades || 0, pips: pips || 0, amount: amount || 0 }; }
+            if (isNaN(trades) && isNaN(pips) && isNaN(amount)) delete currentData[selectedDateKey];
+            else currentData[selectedDateKey] = { trades: trades || 0, pips: pips || 0, amount: amount || 0 };
             localStorage.setItem('fx_data_pro', JSON.stringify(currentData));
             closeModal();
             renderCalendar();
@@ -271,7 +263,7 @@
         }
 
         function exportCSV() {
-            let csv = "\uFEFF日付,トレード回数,獲得pips,当日収支\n";
+            let csv = "\uFEFF日付,回数,pips,収支\n";
             Object.keys(currentData).sort().forEach(k => {
                 csv += `${k},${currentData[k].trades || 0},${currentData[k].pips},${currentData[k].amount}\n`;
             });
@@ -298,7 +290,7 @@
                     }
                 }
                 if (Object.keys(newData).length > 0) {
-                    if(confirm("データを復元しますか？")) {
+                    if(confirm("復元しますか？")) {
                         currentData = newData;
                         localStorage.setItem('fx_data_pro', JSON.stringify(currentData));
                         renderCalendar();
