@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="icon" href="favicon.png" type="image/png">
-<link rel="apple-touch-icon" href="favicon.png">
+    <link rel="icon" href="favicon.png" type="image/png">
+    <link rel="apple-touch-icon" href="favicon.png">
     <title>FX収支管理</title>
     <style>
         :root { --main-bg: #f0f2f5; --card-bg: #ffffff; --primary: #3498db; --negative: #e74c3c; --positive: #27ae60; --dark: #2c3e50; }
@@ -38,7 +38,6 @@
         .val-pips { font-size: 0.65rem; color: var(--positive); margin-bottom: 2px; }
         .val-amount { font-size: 0.85rem; color: var(--dark); font-weight: bold; }
         
-        /* pipsのみモードの強調スタイル */
         .mode-pips-only .val-pips { font-size: 0.8rem; font-weight: bold; text-align: center; }
         .mode-pips-only .data-container { align-items: center; }
 
@@ -56,14 +55,20 @@
         .import-btn { background: #e67e22; }
 
         #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; }
-        .modal-content { background: white; padding: 25px; border-radius: 20px; width: 85%; max-width: 320px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
-        input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; font-size: 1.1rem; appearance: none; }
-        .btn-group { display: flex; gap: 10px; margin-top: 20px; }
+        .modal-content { background: white; padding: 25px; border-radius: 20px; width: 85%; max-width: 320px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; }
+        input { width: 100%; padding: 10px; margin: 5px 0 12px 0; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; font-size: 1rem; appearance: none; }
+        
+        .lot-display-group { display: flex; align-items: center; gap: 10px; margin-top: 5px; margin-bottom: 15px; }
+        .lot-label { font-size: 0.75rem; color: #666; font-weight: bold; }
+        .lot-value { font-size: 1rem; color: #333; }
+
+        .btn-group { display: flex; gap: 10px; margin-top: 10px; }
         .modal-btn { flex: 1; padding: 15px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 1rem; }
         .save-btn { background: var(--primary); color: white; }
         .cancel-btn { background: #eee; color: #333; }
         
         .hidden { display: none !important; }
+        label { font-size: 0.75rem; color: #666; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -109,12 +114,21 @@
     <div id="modal" onclick="if(event.target==this)closeModal()">
         <div class="modal-content">
             <h3 id="selectedDateText">記録</h3>
-            <label style="font-size:0.75rem; color:#666;">トレード回数</label>
+            
+            <label>トレード回数</label>
             <input type="number" id="tradesInput" inputmode="numeric" placeholder="0">
-            <label style="font-size:0.75rem; color:#666;">獲得pips</label>
-            <input type="number" id="pipsInput" step="0.1" inputmode="decimal" placeholder="0.0">
-            <label style="font-size:0.75rem; color:#666;">当日収支</label>
-            <input type="number" id="amountInput" inputmode="numeric" placeholder="0">
+            
+            <label>獲得pips</label>
+            <input type="number" id="pipsInput" step="0.1" inputmode="decimal" placeholder="0.0" oninput="calculateLot()">
+            
+            <label>当日収支</label>
+            <input type="number" id="amountInput" inputmode="numeric" placeholder="0" oninput="calculateLot()">
+            
+            <div class="lot-display-group">
+                <span class="lot-label">平均ロット</span>
+                <span id="autoLotResult" class="lot-value">---</span>
+            </div>
+
             <div class="btn-group">
                 <button class="modal-btn save-btn" onclick="saveData()">保存</button>
                 <button class="modal-btn cancel-btn" onclick="closeModal()">戻る</button>
@@ -128,6 +142,21 @@
         let viewDate = new Date(); 
         let selectedDateKey = "";
 
+        function calculateLot() {
+            const pips = Math.abs(parseFloat(document.getElementById('pipsInput').value));
+            const amount = Math.abs(parseInt(document.getElementById('amountInput').value));
+            const resultEl = document.getElementById('autoLotResult');
+
+            if (pips > 0 && amount > 0) {
+                const pipValue = amount / pips;
+                // 1ロット=1万通貨(1pip=100円)想定で計算し、四捨五入して整数に
+                const lotEst = Math.round(pipValue / 100);
+                resultEl.innerText = `${lotEst} Lot`;
+            } else {
+                resultEl.innerText = "---";
+            }
+        }
+
         function renderCalendar() {
             const year = viewDate.getFullYear();
             const month = viewDate.getMonth();
@@ -137,7 +166,6 @@
             grid.innerHTML = "";
             headers.forEach(h => grid.appendChild(h));
 
-            // pipsのみモード(Mode 2)の場合、親要素にクラスを付与してCSSを切り替え
             if (displayMode === 2) {
                 grid.classList.add('mode-pips-only');
             } else {
@@ -209,6 +237,7 @@
             document.getElementById('pipsInput').value = currentData[dateKey]?.pips || "";
             document.getElementById('amountInput').value = currentData[dateKey]?.amount || "";
             document.getElementById('modal').style.display = 'flex';
+            calculateLot();
         }
 
         function closeModal() { document.getElementById('modal').style.display = 'none'; }
@@ -282,6 +311,4 @@
         renderCalendar();
     </script>
 </body>
-
 </html>
-
