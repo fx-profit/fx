@@ -187,7 +187,7 @@
                     const pips = currentData[dateKey].pips || 0;
                     const amt = currentData[dateKey].amount || 0;
                     
-                    const needsSmallFont = Math.abs(amt) >= 1000000 ? 'small-font' : '';
+                    const needsSmallFont = Math.abs(amt) >= 100000 ? 'small-font' : '';
 
                     html += `
                         <div class="data-container">
@@ -304,6 +304,7 @@
     </script>
 </body>
 </html>
+
 
 
 
