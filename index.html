@@ -30,8 +30,8 @@
         
         .date-num { font-size: 0.7rem; font-weight: bold; color: #7f8c8d; margin-bottom: 1px; }
         
-        /* メモドットのスタイル */
-        .has-memo-dot { width: 4px; height: 4px; background-color: #e67e22; border-radius: 50%; display: inline-block; margin-left: 3px; vertical-align: middle; }
+        /* メモドットのスタイル：グレーに変更 */
+        .has-memo-dot { width: 4px; height: 4px; background-color: #bdc3c7; border-radius: 50%; display: inline-block; margin-left: 3px; vertical-align: middle; }
 
         .data-container { display: flex; flex-direction: column; align-items: flex-end; justify-content: center; flex-grow: 1; width: 100%; overflow: hidden; }
         .day-data { text-align: right; width: 100%; line-height: 1.1; white-space: nowrap; letter-spacing: -0.02em; }
@@ -374,7 +374,6 @@
                     const newData = {};
                     let count = 0;
                     for (let i = 1; i < lines.length; i++) {
-                        // カンマ分割（引用符考慮）
                         const cols = lines[i].match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
                         if (cols && cols.length >= 4) {
                             const date = cols[0].replace(/^\uFEFF/, "").trim();
@@ -405,4 +404,3 @@
     </script>
 </body>
 </html>
-
