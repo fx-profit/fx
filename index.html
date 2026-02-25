@@ -123,7 +123,7 @@
         .graph-btn { background: var(--primary); }
         .export-btn { background: var(--positive); }
         .import-btn { background: #e67e22; }
-        .cum-btn { background: #27ae60; grid-column: span 2; }
+        .cum-btn { background: #008080; grid-column: span 2; }
 
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; padding: 15px; box-sizing: border-box; }
         .modal-content { background: white; padding: 20px; border-radius: 20px; width: 100%; max-width: 340px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; }
@@ -198,7 +198,7 @@
             <label>獲得pips</label>
             <input type="number" id="pipsInput" step="0.1" inputmode="decimal" placeholder="0.0" oninput="autoCalcLot()">
             <label>当日収支</label>
-            <input type="number" id="amountInput" inputmode="numeric" placeholder="0" oninput="autoCalcLot()">
+            <input type="number" id="amountInput" inputmode="decimal" pattern="[0-9]*" placeholder="0" oninput="autoCalcLot()">
             
             <div id="lotResult" class="lot-display">平均ロット: ---</div>
 
