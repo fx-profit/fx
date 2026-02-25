@@ -28,6 +28,8 @@
             flex-direction: column; 
             align-items: center; 
             -webkit-tap-highlight-color: transparent; 
+            /* スワイプ操作中に画面が上下に揺れないように制御 */
+            touch-action: pan-y;
         }
         
         header { 
@@ -49,17 +51,8 @@
             border-radius: 4px;
             cursor: pointer;
             border: 1px solid transparent;
-            transition: background 0.2s;
         }
-        #appTitle:hover {
-            background: rgba(255,255,255,0.1);
-        }
-        #appTitle:focus {
-            background: white;
-            color: var(--dark);
-            outline: none;
-            border: 1px solid var(--primary);
-        }
+        #appTitle:focus { background: white; color: var(--dark); outline: none; }
         
         .container { 
             width: 100%; 
@@ -74,7 +67,18 @@
         .nav-btn { background: var(--card-bg); border: none; padding: 10px 18px; border-radius: 10px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.1); cursor: pointer; }
         #calendarHeader { font-size: 1.1rem; font-weight: bold; }
 
-        .calendar-container { background: var(--card-bg); padding: 5px; border-radius: 12px; width: 100%; max-width: 500px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); box-sizing: border-box; overflow: hidden; }
+        .calendar-container { 
+            background: var(--card-bg); 
+            padding: 5px; 
+            border-radius: 12px; 
+            width: 100%; 
+            max-width: 500px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08); 
+            box-sizing: border-box; 
+            overflow: hidden;
+            /* スワイプ操作の対象であることを明示 */
+            touch-action: none; 
+        }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background-color: #eee; border-radius: 8px; overflow: hidden; border: 1px solid #eee; width: 100%; }
         
         .day-header { background: #f8f9fa; font-size: 0.7rem; font-weight: bold; padding: 6px 0; text-align: center; }
@@ -140,7 +144,7 @@
             <button class="nav-btn" onclick="changeMonth(1)">▶</button>
         </div>
 
-        <div class="calendar-container">
+        <div id="calendarSwipeArea" class="calendar-container">
             <div class="calendar-grid" id="calendarGrid">
                 <div class="day-header">日</div><div class="day-header">月</div><div class="day-header">火</div>
                 <div class="day-header">水</div><div class="day-header">木</div><div class="day-header">金</div>
@@ -223,20 +227,42 @@
         let myChart = null;
         let cumChartInstance = null;
 
+        // タイトルの保存と読み込み
         const titleEl = document.getElementById('appTitle');
         const savedTitle = localStorage.getItem('app_title');
         if (savedTitle) titleEl.innerText = savedTitle;
 
-        titleEl.addEventListener('blur', () => {
-            localStorage.setItem('app_title', titleEl.innerText);
-        });
-        
-        titleEl.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                titleEl.blur();
+        titleEl.addEventListener('blur', () => localStorage.setItem('app_title', titleEl.innerText));
+        titleEl.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); titleEl.blur(); } });
+
+        // --- スワイプジェスチャーの実装 ---
+        let touchStartX = 0;
+        let touchEndX = 0;
+        const swipeArea = document.getElementById('calendarSwipeArea');
+
+        swipeArea.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, {passive: true});
+
+        swipeArea.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, {passive: true});
+
+        function handleSwipe() {
+            const swipeDistance = touchEndX - touchStartX;
+            const threshold = 50; // スワイプと判定する最低距離(px)
+
+            // 右スワイプ → 前の月
+            if (swipeDistance > threshold) {
+                changeMonth(-1);
+            } 
+            // 左スワイプ → 次の月
+            else if (swipeDistance < -threshold) {
+                changeMonth(1);
             }
-        });
+        }
+        // ------------------------------
 
         function autoCalcLot() {
             const pips = Math.abs(parseFloat(document.getElementById('pipsInput').value));
@@ -417,14 +443,11 @@
                 csv += `${k},${currentData[k].trades || 0},${currentData[k].pips},${currentData[k].amount},"${m}"\n`;
             });
             const fileName = `FX収支_${new Date().toISOString().slice(0,10)}.csv`;
-            if (window.AndroidApp && window.AndroidApp.saveCSV) { window.AndroidApp.saveCSV(csv, fileName); }
-            else {
-                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-                const link = document.createElement("a");
-                link.href = URL.createObjectURL(blob);
-                link.download = fileName;
-                link.click();
-            }
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = fileName;
+            link.click();
         }
 
         function importCSV(input) {
