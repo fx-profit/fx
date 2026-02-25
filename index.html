@@ -3,113 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>FX収支管理</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { 
-            --main-bg: #f5f7f8; 
+            --main-bg: #f0f2f5; 
             --card-bg: #ffffff; 
-            --header-bg: #008080; 
-            --header-text: #ffffff;
-            --primary: #008080; 
+            --primary: #3498db; 
             --negative: #e74c3c; 
             --positive: #27ae60; 
             --dark: #2c3e50; 
+            --header-bg: #008080; 
         }
         
         body { 
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
             background-color: var(--main-bg); 
-            color: #333; margin: 0; padding: 0; 
-            display: flex; flex-direction: column; align-items: center; 
+            color: #333; 
+            margin: 0; 
+            padding: 0; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
             -webkit-tap-highlight-color: transparent; 
         }
-
-        header {
-            width: 100%;
-            background-color: var(--header-bg);
-            color: var(--header-text);
-            padding-top: env(safe-area-inset-top, 40px); 
-            padding-bottom: 15px;
-            text-align: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-            margin-bottom: 15px;
+        
+        header { 
+            width: 100%; 
+            background-color: var(--header-bg); 
+            color: white; 
+            padding-top: calc(env(safe-area-inset-top, 20px) + 15px); 
+            padding-bottom: 15px; 
+            text-align: center; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1); 
+            margin-bottom: 10px; 
         }
         
-        header h1 { font-size: 1.2rem; margin: 0; letter-spacing: 1px; }
+        #appTitle { 
+            font-size: 1.2rem; 
+            margin: 0; 
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: background 0.2s;
+        }
+        #appTitle:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        #appTitle:focus {
+            background: white;
+            color: var(--dark);
+            outline: none;
+            border: 1px solid var(--primary);
+        }
         
-        .container {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 0 10px 20px 10px;
-            box-sizing: border-box;
+        .container { 
+            width: 100%; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            padding: 0 10px 20px 10px; 
+            box-sizing: border-box; 
         }
 
-        .calendar-nav { display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 500px; margin-bottom: 12px; }
+        .calendar-nav { display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 500px; margin-bottom: 8px; }
         .nav-btn { background: var(--card-bg); border: none; padding: 10px 18px; border-radius: 10px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.1); cursor: pointer; }
-        #calendarHeader { font-size: 1.1rem; font-weight: bold; color: var(--dark); }
+        #calendarHeader { font-size: 1.1rem; font-weight: bold; }
 
-        .calendar-container { background: var(--card-bg); padding: 5px; border-radius: 15px; width: 100%; max-width: 500px; box-shadow: 0 4px 15px rgba(0,0,0,0.06); box-sizing: border-box; overflow: hidden; }
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background-color: #eee; border-radius: 10px; overflow: hidden; border: 1px solid #eee; width: 100%; }
+        .calendar-container { background: var(--card-bg); padding: 5px; border-radius: 12px; width: 100%; max-width: 500px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); box-sizing: border-box; overflow: hidden; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background-color: #eee; border-radius: 8px; overflow: hidden; border: 1px solid #eee; width: 100%; }
         
-        .day-header { background: #f8f9fa; font-size: 0.7rem; font-weight: bold; padding: 8px 0; text-align: center; }
+        .day-header { background: #f8f9fa; font-size: 0.7rem; font-weight: bold; padding: 6px 0; text-align: center; }
         .day-header:nth-child(1) { color: var(--negative); } 
         .day-header:nth-child(7) { color: var(--primary); } 
 
-        .day { background: white; aspect-ratio: 1 / 1.35; display: flex; flex-direction: column; padding: 3px; cursor: pointer; position: relative; justify-content: flex-start; overflow: hidden; box-sizing: border-box; }
+        .day { background: white; aspect-ratio: 1 / 1.35; display: flex; flex-direction: column; padding: 2px 3px; cursor: pointer; position: relative; justify-content: flex-start; overflow: hidden; box-sizing: border-box; }
         .day.other-month { background-color: #fafafa; color: #ccc; pointer-events: none; }
         
-        .date-num { font-size: 0.75rem; font-weight: bold; color: #7f8c8d; margin-bottom: 2px; }
-        .has-memo-dot { width: 4px; height: 4px; background-color: #bdc3c7; border-radius: 50%; display: inline-block; margin-left: 3px; vertical-align: middle; }
+        .date-num { font-size: 0.7rem; font-weight: bold; color: #7f8c8d; margin-bottom: 1px; display: flex; align-items: center; }
+        .memo-dot { width: 4px; height: 4px; background-color: #bdc3c7; border-radius: 50%; margin-left: 3px; display: inline-block; }
 
         .data-container { display: flex; flex-direction: column; align-items: flex-end; justify-content: center; flex-grow: 1; width: 100%; overflow: hidden; }
         .day-data { text-align: right; width: 100%; line-height: 1.1; white-space: nowrap; letter-spacing: -0.02em; }
-        
-        .val-trades { font-size: 0.55rem; color: #95a5a6; }
-        .val-pips { font-size: 0.65rem; color: var(--positive); }
-        .val-amount { font-size: 0.85rem; color: var(--dark); font-weight: bold; }
-        .small-font { font-size: 0.7rem !important; }
+        .val-trades { font-size: 0.5rem; color: #7f8c8d; }
+        .val-pips { font-size: 0.6rem; color: var(--positive); }
+        .val-amount { font-size: 0.8rem; color: var(--dark); font-weight: bold; }
+        .small-font { font-size: 0.65rem !important; }
         .negative { color: var(--negative) !important; }
 
-        .summary { margin-top: 15px; background: var(--dark); color: white; padding: 15px; border-radius: 15px; width: 100%; max-width: 500px; display: flex; justify-content: space-around; box-sizing: border-box; }
+        .summary { margin-top: 12px; background: var(--dark); color: white; padding: 12px; border-radius: 12px; width: 100%; max-width: 500px; display: flex; justify-content: space-around; box-sizing: border-box; }
         .summary-item { text-align: center; flex: 1; }
-        .summary-label { font-size: 0.65rem; opacity: 0.8; display: block; margin-bottom: 4px; }
-        .summary-value { font-size: 1.1rem; font-weight: bold; display: block; }
+        .summary-label { font-size: 0.6rem; opacity: 0.8; display: block; }
+        .summary-value { font-size: 1.1rem; font-weight: bold; margin-top: 4px; display: block; }
 
-        .action-group { margin-top: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; max-width: 500px; }
-        .btn { border: none; padding: 14px; border-radius: 12px; cursor: pointer; font-size: 0.9rem; color: white; font-weight: bold; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .action-group { margin-top: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; max-width: 500px; }
+        .btn { border: none; padding: 14px; border-radius: 10px; cursor: pointer; font-size: 0.85rem; color: white; font-weight: bold; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .toggle-btn { background: #7f8c8d; }
         .graph-btn { background: var(--primary); }
-        .export-btn { background: #27ae60; }
+        .export-btn { background: var(--positive); }
         .import-btn { background: #e67e22; }
+        .cum-btn { background: #27ae60; grid-column: span 2; }
 
-        #modal, #graphModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; padding: 20px; box-sizing: border-box; }
-        .modal-content { background: white; padding: 25px; border-radius: 20px; width: 100%; max-width: 320px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; padding: 15px; box-sizing: border-box; }
+        .modal-content { background: white; padding: 20px; border-radius: 20px; width: 100%; max-width: 340px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; }
         
-        /* グラフエリアを広げるための調整 */
-        .graph-content { width: 100%; max-width: 600px; background: white; padding: 10px; border-radius: 15px; box-sizing: border-box; }
+        .cum-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 0.85rem; }
+        .cum-table th, .cum-table td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+        .cum-table th { background: #f8f9fa; }
+
+        input, textarea { width: 100%; padding: 10px; margin: 5px 0 12px 0; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; font-size: 1rem; appearance: none; font-family: inherit; }
+        label { font-size: 0.75rem; color: #666; font-weight: bold; }
         
-        input, textarea { width: 100%; padding: 12px; margin: 5px 0 15px 0; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; font-size: 1rem; appearance: none; font-family: inherit; }
-        label { font-size: 0.8rem; color: #666; font-weight: bold; }
-        
-        .lot-display-group { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; background: #f8f9fa; padding: 10px; border-radius: 10px; }
-        .lot-label { font-size: 0.75rem; color: #666; }
-        .lot-value { font-size: 1rem; color: var(--primary); font-weight: bold; }
+        .lot-display { font-size: 0.85rem; color: var(--primary); margin-bottom: 12px; font-weight: bold; text-align: right; }
 
         .btn-group { display: flex; gap: 10px; margin-top: 10px; }
-        .modal-btn { flex: 1; padding: 15px; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 1rem; }
+        .modal-btn { flex: 1; padding: 15px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 1rem; }
         .save-btn { background: var(--primary); color: white; }
         .cancel-btn { background: #eee; color: #333; }
-        
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>FX収支管理</h1>
+        <h1 id="appTitle" contenteditable="true" spellcheck="false">FX収支管理</h1>
     </header>
 
     <div class="container">
@@ -143,27 +164,27 @@
         </div>
 
         <div class="action-group">
+            <button class="btn cum-btn" onclick="showCumulativeModal()">累計を表示</button>
             <button class="btn toggle-btn" onclick="cycleDisplayMode()">表示切替</button>
             <button class="btn graph-btn" onclick="showGraph()">グラフ表示</button>
-            <button class="btn export-btn" onclick="exportCSV()">CSV出力</button>
-            <button class="btn import-btn" onclick="document.getElementById('importFile').click()">復元</button>
-            <input type="file" id="importFile" style="display:none" onchange="importCSV(this)">
+            <button class="btn export-btn" onclick="exportCSV()">CSVファイル出力</button>
+            <button class="btn import-btn" onclick="document.getElementById('importFile').click()">CSVから復元</button>
+            <input type="file" id="importFile" style="display:none" accept=".csv" onchange="importCSV(this)">
         </div>
     </div>
 
-    <div id="modal" onclick="if(event.target==this)closeModal()">
+    <div id="modal" class="modal" onclick="if(event.target==this)closeModal()">
         <div class="modal-content">
-            <h3 id="selectedDateText" style="margin-top:0; color:var(--primary);">記録</h3>
+            <h3 id="selectedDateText" style="margin-top:0; color:var(--header-bg);">記録</h3>
             <label>トレード回数</label>
             <input type="number" id="tradesInput" inputmode="numeric" placeholder="0">
             <label>獲得pips</label>
-            <input type="number" id="pipsInput" step="0.1" inputmode="decimal" placeholder="0.0" oninput="calculateLot()">
+            <input type="number" id="pipsInput" step="0.1" inputmode="decimal" placeholder="0.0" oninput="autoCalcLot()">
             <label>当日収支</label>
-            <input type="number" id="amountInput" inputmode="numeric" placeholder="0" oninput="calculateLot()">
-            <div class="lot-display-group">
-                <span class="lot-label">平均ロット推定</span>
-                <span id="autoLotResult" class="lot-value">---</span>
-            </div>
+            <input type="number" id="amountInput" inputmode="numeric" placeholder="0" oninput="autoCalcLot()">
+            
+            <div id="lotResult" class="lot-display">平均ロット: ---</div>
+
             <label>メモ</label>
             <textarea id="memoInput" rows="3"></textarea>
             <div class="btn-group">
@@ -173,10 +194,24 @@
         </div>
     </div>
 
-    <div id="graphModal" onclick="if(event.target==this)this.style.display='none'">
-        <div class="graph-content">
+    <div id="cumModal" class="modal" onclick="if(event.target==this)this.style.display='none'">
+        <div class="modal-content" style="max-width: 500px;">
+            <h3 style="margin-top:0; text-align:center;" id="cumModalTitle">累計収支</h3>
+            <table class="cum-table">
+                <thead>
+                    <tr><th>月</th><th>月間収支</th><th>累計収支</th></tr>
+                </thead>
+                <tbody id="cumTableBody"></tbody>
+            </table>
+            <canvas id="cumChart"></canvas>
+            <button class="modal-btn cancel-btn" style="width:100%; margin-top:15px;" onclick="document.getElementById('cumModal').style.display='none'">閉じる</button>
+        </div>
+    </div>
+
+    <div id="graphModal" class="modal" onclick="if(event.target==this)this.style.display='none'">
+        <div class="modal-content" style="max-width: 600px;">
             <canvas id="balanceChart"></canvas>
-            <button class="modal-btn cancel-btn" style="width:100%; margin-top:10px;" onclick="document.getElementById('graphModal').style.display='none'">閉じる</button>
+            <button class="modal-btn cancel-btn" style="width:100%; margin-top:15px;" onclick="document.getElementById('graphModal').style.display='none'">閉じる</button>
         </div>
     </div>
 
@@ -186,15 +221,35 @@
         let viewDate = new Date(); 
         let selectedDateKey = "";
         let myChart = null;
+        let cumChartInstance = null;
 
-        function calculateLot() {
+        const titleEl = document.getElementById('appTitle');
+        const savedTitle = localStorage.getItem('app_title');
+        if (savedTitle) titleEl.innerText = savedTitle;
+
+        titleEl.addEventListener('blur', () => {
+            localStorage.setItem('app_title', titleEl.innerText);
+        });
+        
+        titleEl.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                titleEl.blur();
+            }
+        });
+
+        function autoCalcLot() {
             const pips = Math.abs(parseFloat(document.getElementById('pipsInput').value));
             const amount = Math.abs(parseInt(document.getElementById('amountInput').value));
-            const resultEl = document.getElementById('autoLotResult');
+            const display = document.getElementById('lotResult');
+            
             if (pips > 0 && amount > 0) {
-                const lotEst = Math.round((amount / pips) / 100);
-                resultEl.innerText = `${lotEst} Lot`;
-            } else { resultEl.innerText = "---"; }
+                const lotRaw = (amount / (pips * 100)).toFixed(2);
+                const lotDisplay = Number(lotRaw); 
+                display.innerText = `平均ロット: ${lotDisplay} Lot (1万通貨単位)`;
+            } else {
+                display.innerText = `平均ロット: ---`;
+            }
         }
 
         function renderCalendar() {
@@ -219,8 +274,9 @@
                 const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
                 const dayDiv = document.createElement('div');
                 dayDiv.className = 'day';
-                const hasMemo = currentData[dateKey]?.memo ? '<span class="has-memo-dot"></span>' : '';
-                let html = `<span class="date-num">${d}${hasMemo}</span>`;
+                const hasMemo = (currentData[dateKey]?.memo && currentData[dateKey].memo.trim() !== "");
+                let html = `<span class="date-num">${d}${hasMemo ? '<span class="memo-dot"></span>' : ''}</span>`;
+                
                 if (currentData[dateKey]) {
                     const trades = currentData[dateKey].trades || 0;
                     const pips = currentData[dateKey].pips || 0;
@@ -240,23 +296,6 @@
             updateUI();
         }
 
-        function cycleDisplayMode() {
-            displayMode = (displayMode + 1) % 4;
-            localStorage.setItem('display_mode', displayMode);
-            renderCalendar();
-        }
-
-        function updateUI() {
-            const sTrades = document.getElementById('summaryTrades');
-            const sPips = document.getElementById('summaryPips');
-            const sAmt = document.getElementById('summaryAmount');
-            displayMode === 0 ? sTrades.classList.remove('hidden') : sTrades.classList.add('hidden');
-            (displayMode <= 2) ? sPips.classList.remove('hidden') : sPips.classList.add('hidden');
-            [0,1,3].includes(displayMode) ? sAmt.classList.remove('hidden') : sAmt.classList.add('hidden');
-        }
-
-        function changeMonth(diff) { viewDate.setMonth(viewDate.getMonth() + diff); renderCalendar(); }
-        
         function openModal(dateKey) {
             selectedDateKey = dateKey;
             const parts = dateKey.split('-');
@@ -266,24 +305,35 @@
             document.getElementById('amountInput').value = currentData[dateKey]?.amount || "";
             document.getElementById('memoInput').value = currentData[dateKey]?.memo || "";
             document.getElementById('modal').style.display = 'flex';
-            calculateLot();
+            autoCalcLot();
         }
-
-        function closeModal() { document.getElementById('modal').style.display = 'none'; }
 
         function saveData() {
             const trades = parseInt(document.getElementById('tradesInput').value);
             const pips = parseFloat(document.getElementById('pipsInput').value);
             const amount = parseInt(document.getElementById('amountInput').value);
             const memo = document.getElementById('memoInput').value;
-            if (isNaN(trades) && isNaN(pips) && isNaN(amount) && !memo) {
+            if (isNaN(trades) && isNaN(pips) && isNaN(amount) && (!memo || memo.trim() === "")) {
                 delete currentData[selectedDateKey];
             } else {
-                currentData[selectedDateKey] = { trades: trades||0, pips: pips||0, amount: amount||0, memo: memo||"" };
+                currentData[selectedDateKey] = { trades: trades || 0, pips: pips || 0, amount: amount || 0, memo: memo || "" };
             }
             localStorage.setItem('fx_data_pro', JSON.stringify(currentData));
             closeModal();
             renderCalendar();
+        }
+
+        function closeModal() { document.getElementById('modal').style.display = 'none'; }
+        function changeMonth(diff) { viewDate.setMonth(viewDate.getMonth() + diff); renderCalendar(); }
+        function cycleDisplayMode() { displayMode = (displayMode + 1) % 4; localStorage.setItem('display_mode', displayMode); renderCalendar(); }
+
+        function updateUI() {
+            const sTrades = document.getElementById('summaryTrades');
+            const sPips = document.getElementById('summaryPips');
+            const sAmt = document.getElementById('summaryAmount');
+            displayMode === 0 ? sTrades.classList.remove('hidden') : sTrades.classList.add('hidden');
+            (displayMode <= 2) ? sPips.classList.remove('hidden') : sPips.classList.add('hidden');
+            [0,1,3].includes(displayMode) ? sAmt.classList.remove('hidden') : sAmt.classList.add('hidden');
         }
 
         function updateSummary() {
@@ -303,16 +353,43 @@
             aEl.className = `summary-value ${tA < 0 ? 'negative' : ''}`;
         }
 
+        function showCumulativeModal() {
+            const targetYear = viewDate.getFullYear();
+            document.getElementById('cumModalTitle').innerText = `${targetYear}年 累計収支`;
+            const tbody = document.getElementById('cumTableBody');
+            tbody.innerHTML = "";
+            let cumulative = 0;
+            const monthLabels = [], cumPoints = [];
+            for (let m = 0; m < 12; m++) {
+                let monthSum = 0;
+                const ymPrefix = `${targetYear}-${String(m + 1).padStart(2, '0')}`;
+                Object.keys(currentData).forEach(k => { if (k.startsWith(ymPrefix)) monthSum += (currentData[k].amount || 0); });
+                cumulative += monthSum;
+                const row = document.createElement('tr');
+                row.innerHTML = `<td>${m + 1}月</td><td class="${monthSum < 0 ? 'negative' : ''}">${monthSum.toLocaleString()}</td><td class="${cumulative < 0 ? 'negative' : ''}">${cumulative.toLocaleString()}</td>`;
+                tbody.appendChild(row);
+                monthLabels.push(`${m + 1}月`);
+                cumPoints.push(cumulative);
+            }
+            document.getElementById('cumModal').style.display = 'flex';
+            const ctx = document.getElementById('cumChart').getContext('2d');
+            if (cumChartInstance) cumChartInstance.destroy();
+            cumChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: { labels: monthLabels, datasets: [{ data: cumPoints, borderColor: '#3498db', backgroundColor: 'rgba(52, 152, 219, 0.1)', borderWidth: 3, fill: true, tension: 0.3 }] },
+                options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { ticks: { callback: v => '¥' + v.toLocaleString() } } } }
+            });
+        }
+
         function showGraph() {
             const year = viewDate.getFullYear();
             const month = viewDate.getMonth();
             const lastDate = new Date(year, month + 1, 0).getDate();
             const labels = [], dataPoints = [];
-            let cumulativeBalance = 0, hasData = false;
+            let cumulativeBalance = 0;
             for (let d = 1; d <= lastDate; d++) {
                 const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
                 labels.push(d);
-                if (currentData[dateKey]) hasData = true;
                 cumulativeBalance += (currentData[dateKey]?.amount || 0);
                 dataPoints.push(cumulativeBalance);
             }
@@ -321,37 +398,14 @@
             if (myChart) myChart.destroy();
             myChart = new Chart(ctx, {
                 type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        data: dataPoints,
-                        borderColor: '#008080',
-                        backgroundColor: 'rgba(0, 128, 128, 0.1)',
-                        fill: true,
-                        tension: 0.3,
-                        pointRadius: 3
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: { display: false } // ラベル（凡例）を削除
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                font: { size: 10 },
-                                callback: (v) => '¥' + v.toLocaleString()
-                            }
-                        },
-                        x: {
-                            ticks: { font: { size: 10 } }
-                        }
-                    },
-                    layout: {
-                        padding: { left: 5, right: 10, top: 10, bottom: 5 }
-                    }
+                data: { labels: labels, datasets: [{ data: dataPoints, borderColor: '#3498db', backgroundColor: 'rgba(52, 152, 219, 0.1)', fill: true, tension: 0.3 }] },
+                options: { 
+                    responsive: true, 
+                    plugins: { legend: { display: false } }, 
+                    scales: { 
+                        y: { ticks: { callback: v => '¥' + v.toLocaleString() } },
+                        x: { ticks: { maxRotation: 0, minRotation: 0, autoSkip: true, maxTicksLimit: 10 } }
+                    } 
                 }
             });
         }
@@ -360,27 +414,37 @@
             let csv = "\uFEFF日付,回数,pips,収支,メモ\n";
             Object.keys(currentData).sort().forEach(k => {
                 const m = (currentData[k].memo || "").replace(/"/g, '""');
-                csv += `${k},${currentData[k].trades},${currentData[k].pips},${currentData[k].amount},"${m}"\n`;
+                csv += `${k},${currentData[k].trades || 0},${currentData[k].pips},${currentData[k].amount},"${m}"\n`;
             });
             const fileName = `FX収支_${new Date().toISOString().slice(0,10)}.csv`;
-            if (window.AndroidApp) window.AndroidApp.saveCSV(csv, fileName);
+            if (window.AndroidApp && window.AndroidApp.saveCSV) { window.AndroidApp.saveCSV(csv, fileName); }
+            else {
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement("a");
+                link.href = URL.createObjectURL(blob);
+                link.download = fileName;
+                link.click();
+            }
         }
 
         function importCSV(input) {
-            const file = input.files[0]; if (!file) return;
+            const file = input.files[0];
+            if (!file) return;
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
-                    const lines = e.target.result.split(/\r?\n/);
-                    const newData = {}; let count = 0;
+                    const text = e.target.result;
+                    const lines = text.split(/\r?\n/);
+                    const newData = {};
+                    let count = 0;
                     for (let i = 1; i < lines.length; i++) {
-                        const cols = lines[i].match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
-                        if (cols && cols.length >= 4) {
+                        const cols = lines[i].split(",");
+                        if (cols.length >= 4) {
                             const date = cols[0].replace(/^\uFEFF/, "").trim();
                             if (date) {
-                                newData[date] = {
-                                    trades: parseInt(cols[1]) || 0,
-                                    pips: parseFloat(cols[2]) || 0,
+                                newData[date] = { 
+                                    trades: parseInt(cols[1]) || 0, 
+                                    pips: parseFloat(cols[2]) || 0, 
                                     amount: parseInt(cols[3]) || 0,
                                     memo: cols[4] ? cols[4].replace(/^"|"$/g, '').replace(/""/g, '"') : ""
                                 };
@@ -392,11 +456,12 @@
                         currentData = newData;
                         localStorage.setItem('fx_data_pro', JSON.stringify(currentData));
                         renderCalendar();
+                        alert("復元完了");
                     }
                 } catch (err) { alert("エラー"); }
             };
             reader.readAsText(file, "UTF-8");
-            input.value = "";
+            input.value = ""; 
         }
 
         renderCalendar();
