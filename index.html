@@ -31,27 +31,31 @@
             touch-action: pan-y;
         }
         
-        header { 
-            width: 100%; 
-            background-color: var(--header-bg); 
-            color: white; 
-            padding-top: calc(env(safe-area-inset-top, 20px) + 15px); 
-            padding-bottom: 15px; 
-            text-align: center; 
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1); 
-            margin-bottom: 10px; 
-        }
-        
-        #appTitle { 
-            font-size: 1.2rem; 
-            margin: 0; 
-            display: inline-block;
-            padding: 2px 10px;
-            border-radius: 4px;
-            cursor: pointer;
-            border: 1px solid transparent;
-        }
-        #appTitle:focus { background: white; color: var(--dark); outline: none; }
+header { 
+    width: 100%; 
+    background: linear-gradient(to bottom, #004d40 0%, #004d40 40%, #008080 40%, #008080 100%);
+    color: white; 
+    padding-top: calc(env(safe-area-inset-top, 20px) + 50px); 
+    padding-bottom: 15px; 
+    text-align: center; 
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2); 
+    margin-bottom: 10px; 
+}
+
+#appTitle { 
+    font-size: 1.2rem;
+    margin: 0; 
+    display: inline-block;
+    padding: 2px 10px;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    border: none;
+}
+
+#appTitle:focus { 
+    background: rgba(255, 255, 255, 0.1); 
+    outline: none; 
+}
         
         .container { 
             width: 100%; 
@@ -488,3 +492,4 @@
     </script>
 </body>
 </html>
+
