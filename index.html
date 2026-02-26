@@ -37,7 +37,7 @@ header {
     width: 100%; 
     background: linear-gradient(to bottom, #004d40 0%, #004d40 40%, #008080 40%, #008080 100%);
     color: white; 
-    padding-top: calc(env(safe-area-inset-top, 20px) + 50px); 
+    padding-top: calc(env(safe-area-inset-top, 20px) + 35px); 
     padding-bottom: 15px; 
     text-align: center; 
     box-shadow: 0 2px 8px rgba(0,0,0,0.2); 
@@ -440,7 +440,7 @@ header {
         }
 
         function exportCSV() {
-           let csv = "\uFEFF日付,回数,pips,収支,メモ\n";
+            let csv = "\uFEFF日付,回数,pips,収支,メモ\n";
             Object.keys(currentData).sort().forEach(k => {
                 const m = (currentData[k].memo || "").replace(/"/g, '""');
                 csv += `${k},${currentData[k].trades || 0},${currentData[k].pips},${currentData[k].amount},"${m}"\n`;
@@ -494,5 +494,4 @@ header {
     </script>
 </body>
 </html>
-
 
