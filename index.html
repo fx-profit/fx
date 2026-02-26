@@ -440,13 +440,6 @@ header {
         }
 
         function exportCSV() {
-
-// --- 追加箇所：確認ダイアログを表示 ---
-            if (!confirm("データをバックアップ（CSV出力）しますか？")) {
-                return; // 「キャンセル」が押されたらここで処理を終了する
-            }
-            // ------------------------------------
-
            let csv = "\uFEFF日付,回数,pips,収支,メモ\n";
             Object.keys(currentData).sort().forEach(k => {
                 const m = (currentData[k].memo || "").replace(/"/g, '""');
@@ -501,4 +494,5 @@ header {
     </script>
 </body>
 </html>
+
 
