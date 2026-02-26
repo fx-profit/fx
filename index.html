@@ -81,7 +81,7 @@ header {
             box-shadow: 0 4px 15px rgba(0,0,0,0.08); 
             box-sizing: border-box; 
             overflow: hidden;
-            touch-action: none; 
+            touch-action: pan-x pan-y;
         }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background-color: #eee; border-radius: 8px; overflow: hidden; border: 1px solid #eee; width: 100%; }
         
@@ -104,7 +104,7 @@ header {
         .large-pips { 
             font-size: 0.85rem !important; 
             font-weight: bold; 
-            text-align: center;
+            text-align: center
             width: 100%;
             margin-top: 4px;
             letter-spacing: -0.05em;
@@ -494,5 +494,4 @@ header {
     </script>
 </body>
 </html>
-
 
