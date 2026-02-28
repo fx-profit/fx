@@ -1,11 +1,8 @@
-const CACHE_NAME = 'logical-quest-v1';
+const CACHE_NAME = 'fx-profit-v1';
 // キャッシュするファイルのリスト
 // service-worker.jsファイルからの相対パスで指定
 const urlsToCache = [
   './index.html',
-  './3d_route.html',
-  './jigsaw_puzzle.html',
-  './route_puzzle.html'
   // アイコンやCSSなども必要に応じて追加
 ];
 
@@ -51,3 +48,4 @@ self.addEventListener('activate', (event) => {
     })
   );
 });
+
