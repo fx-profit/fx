@@ -24,7 +24,10 @@
         
         body { 
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-            background-color: var(--main-bg); color: #333; margin: 0; padding: 0; 
+            background-color: var(--main-bg); 
+            color: #333; 
+            margin: 0; 
+            padding: 0; 
             display: flex; 
             flex-direction: column; 
             align-items: center; 
@@ -97,6 +100,7 @@
             will-change: transform, opacity;
         }
         
+        /* アニメーション用クラス: 戻る時やスライドイン時に使用 */
         .is-animating { transition: transform 0.3s ease-out, opacity 0.3s ease-out; }
 
         .day-header { background: #f8f9fa; font-size: 0.7rem; font-weight: bold; padding: 6px 0; text-align: center; }
@@ -151,11 +155,7 @@
         .cum-table th, .cum-table td { border: 1px solid #ddd; padding: 8px; text-align: center; }
         .cum-table th { background: #f8f9fa; }
         .cum-table td:first-child { background: #f8f9fa;}
-
-        input, textarea { width: 100%; padding: 12px; margin: 5px 0 12px 0; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; font-size: 1rem; appearance: none; font-family: inherit; background: #fff; }
-        /* Readonlyの入力欄にフォーカス風の枠線を出す */
-        input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2); }
-        
+        input, textarea { width: 100%; padding: 10px; margin: 5px 0 12px 0; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; font-size: 1rem; appearance: none; font-family: inherit; }
         label { font-size: 0.75rem; color: #666; font-weight: bold; }
         
         .lot-display { font-size: 0.85rem; color: var(--primary); margin-bottom: 12px; font-weight: bold; text-align: right; }
@@ -165,99 +165,6 @@
         .save-btn { background: var(--primary); color: white; }
         .cancel-btn { background: #eee; color: #333; }
         .hidden { display: none !important; }
-
-/* --- カスタムテンキーのスタイル修正版 --- */
-.keypad-container {
-    display: none;
-    position: fixed;
-    bottom: 0; left: 0; width: 100%;
-    background: #f1f3f4; 
-    /* 高さを約3mm分(12px程度)削減: paddingを上下4pxずつ、ボタンを4pxほど調整 */
-    padding: 4px 8px calc(env(safe-area-inset-bottom, 0px) + 4px) 8px;
-    box-shadow: 0 -1px 3px rgba(0,0,0,0.1);
-    z-index: 2000;
-    box-sizing: border-box;
-    animation: slideUp 0.15s ease-out;
-    /* スクロールを邪魔しないよう、テンキー上での操作のみに制限 */
-    touch-action: pan-y; 
-}
-/* --- ここが重要：ボタンを並べる設定 --- */
-.keypad-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 3列に並べる */
-    gap: 8px; /* ボタン同士の間隔 */
-    max-width: 500px;
-    margin: 0 auto;
-}
-
-
-/* 追加：テンキー表示中にモーダルの中身が隠れないようにするためのクラス */
-.modal-content.with-keypad {
-padding-bottom: 350px !important; /* テンキーより少し多めに余白を取る */
-    transition: padding 0.3s ease; /* スムーズな動きに */
-}
-
-
-.keypad-grid button {
-    height: 46px; /* 50pxから46pxに変更 */
-    font-size: 1.4rem;
-    font-weight: 400;
-    border: none;
-    border-radius: 8px;
-    background: #fff;
-    color: #3c4043;
-    box-shadow: 0 1px 2px rgba(60,64,67,0.3); 
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-}
-
-/* モーダル自体をスクロール可能にする */
-.modal {
-    display: flex;
-    align-items: center; /* 中央配置に戻す（スクロールで上下に動くため） */
-    justify-content: center;
-    overflow-y: auto !important;
-    -webkit-overflow-scrolling: touch;
-}
-
-/* スペーサー：これがテンキーの「壁」になります */
-#keypad-spacer {
-    display: none;
-    height: 280px; /* テンキーの高さに合わせる */
-    width: 100%;
-}
-/* テンキー表示中はスペーサーを有効にする */
-.with-keypad #keypad-spacer {
-    display: block;
-}
-
-/* テンキー表示中の底上げ設定 */
-.modal-content.with-keypad {
-    /* 全体のパディングではなく、下の余白だけを少し追加 */
-    padding-bottom: 20px !important; 
-    transition: padding 0.2s ease;
-}
-
-/* タップした時のフィードバック色 */
-.keypad-grid button:active {
-    background: #dee1e5;
-}
-
-/* 削除やマイナスボタンの色をGBoardの機能キーに合わせる */
-.btn-gray {
-    background: #dadce0 !important;
-}
- 
-
-       .btn-orange { background: #ff9f0a !important; color: white !important; }
-        .keypad-header {
-            display: flex;
-            justify-content: flex-end;
-            padding-bottom: 8px;
-            max-width: 500px;
-            margin: 0 auto;
-        }
-        .done-link { color: #007aff; font-weight: bold; font-size: 1rem; cursor: pointer; padding: 5px 10px; }
     </style>
 </head>
 <body>
@@ -274,7 +181,8 @@ padding-bottom: 350px !important; /* テンキーより少し多めに余白を�
         </div>
 
         <div id="calendarSwipeArea" class="calendar-container">
-            <div class="calendar-grid" id="calendarGrid"></div>
+            <div class="calendar-grid" id="calendarGrid">
+                </div>
         </div>
 
         <div class="summary">
@@ -305,46 +213,19 @@ padding-bottom: 350px !important; /* テンキーより少し多めに余白を�
     <div id="modal" class="modal" onclick="if(event.target==this)closeModal()">
         <div class="modal-content">
             <h3 id="selectedDateText" style="margin-top:0; color:var(--header-bg);">記録</h3>
-<label>トレード回数</label>
-<input type="text" id="tradesInput" placeholder="0" onclick="openKeypad('tradesInput')">
-
-<label>獲得pips</label>
-<input type="text" id="pipsInput" placeholder="0.0" onclick="openKeypad('pipsInput')">
-
-<label>当日収支</label>
-<input type="text" id="amountInput" placeholder="0" onclick="openKeypad('amountInput')">
-            
+            <label>トレード回数</label>
+            <input type="number" id="tradesInput" inputmode="numeric" placeholder="0">
+            <label>獲得pips</label>
+            <input type="number" id="pipsInput" step="0.1" inputmode="decimal" placeholder="0.0" oninput="autoCalcLot()">
+            <label>当日収支</label>
+            <input type="number" id="amountInput" inputmode="decimal" pattern="[0-9]*" placeholder="0" oninput="autoCalcLot()">
             <div id="lotResult" class="lot-display">平均ロット: ---</div>
             <label>メモ</label>
-            <textarea id="memoInput" rows="3" onfocus="closeKeypad()"></textarea>
-            
+            <textarea id="memoInput" rows="3"></textarea>
             <div class="btn-group">
-    <button class="modal-btn save-btn" onclick="saveData()">保存</button>
-    <button class="modal-btn cancel-btn" onclick="closeModal()">戻る</button>
-</div>
-<div id="keypad-spacer"></div>
-        </div>
-    </div>
-
-    <div id="customKeypad" class="keypad-container">
-        <div class="keypad-header">
-            <div class="done-link" onclick="closeKeypad()">完了</div>
-        </div>
-        <div class="keypad-grid">
-            <button onclick="kpInput('1')">1</button>
-            <button onclick="kpInput('2')">2</button>
-            <button onclick="kpInput('3')">3</button>
-            <button onclick="kpInput('4')">4</button>
-            <button onclick="kpInput('5')">5</button>
-            <button onclick="kpInput('6')">6</button>
-            <button onclick="kpInput('7')">7</button>
-            <button onclick="kpInput('8')">8</button>
-            <button onclick="kpInput('9')">9</button>
-            <button class="btn-gray" onclick="kpToggleMinus()">±</button>
-            <button onclick="kpInput('0')">0</button>
-            <button onclick="kpInput('00')">00</button>
-            <button onclick="kpInput('.')">.</button>
-            <button class="btn-gray" style="grid-column: span 2;" onclick="kpDelete()">削除</button>
+                <button class="modal-btn save-btn" onclick="saveData()">保存</button>
+                <button class="modal-btn cancel-btn" onclick="closeModal()">戻る</button>
+            </div>
         </div>
     </div>
 
@@ -370,170 +251,147 @@ padding-bottom: 350px !important; /* テンキーより少し多めに余白を�
     </div>
 
     <script>
-let currentData = JSON.parse(localStorage.getItem('fx_data_pro')) || {};
+        let currentData = JSON.parse(localStorage.getItem('fx_data_pro')) || {};
         let displayMode = parseInt(localStorage.getItem('display_mode')) || 0;
         let viewDate = new Date(); 
         let selectedDateKey = "";
         let myChart = null;
         let cumChartInstance = null;
 
-        // --- PC/スマホ判定とテンキー制御 ---
-        let activeInputId = null;
-        // タッチデバイスかどうかを判定
-        const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-
-function openKeypad(id) {
-    if (isTouchDevice) {
-        activeInputId = id;
-        const input = document.getElementById(id);
-        input.readOnly = true;
-        document.getElementById('customKeypad').style.display = 'block';
-        
-        // モーダル全体にクラスを付与
-        const modalContent = document.querySelector('.modal-content');
-        if (modalContent) {
-            modalContent.classList.add('with-keypad');
-            
-            // 0.1秒待ってから、入力欄が画面の「中央」に来るようにスクロール
-            // これにより、上が日付、下が保存ボタンという余裕が生まれます
-            setTimeout(() => {
-                input.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }, 100);
-        }
-    } else {
-        const input = document.getElementById(id);
-        input.readOnly = false;
-        closeKeypad();
-    }
-}
-
-function closeKeypad() {
-    document.getElementById('customKeypad').style.display = 'none';
-    activeInputId = null;
-    
-    const modalContent = document.querySelector('.modal-content');
-    if (modalContent) {
-        modalContent.classList.remove('with-keypad');
-    }
-}
-        // --- HTMLのinput部分も少し修正（初期状態のreadonlyを削除） ---
-
-        function kpInput(val) {
-            if(!activeInputId) return;
-            const input = document.getElementById(activeInputId);
-            // ドットの重複チェック
-            if(val === '.' && input.value.includes('.')) return;
-            input.value += val;
-            autoCalcLot();
-        }
-
-        function kpDelete() {
-            if(!activeInputId) return;
-            const input = document.getElementById(activeInputId);
-            input.value = input.value.slice(0, -1);
-            autoCalcLot();
-        }
-
-        function kpToggleMinus() {
-            if(!activeInputId) return;
-            const input = document.getElementById(activeInputId);
-            if (input.value.startsWith('-')) {
-                input.value = input.value.substring(1);
-            } else {
-                if(input.value !== "") {
-                    input.value = '-' + input.value;
-                } else {
-                    input.value = '-';
-                }
-            }
-            autoCalcLot();
-        }
-
-        // --- 既存のアプリロジック ---
         const titleEl = document.getElementById('appTitle');
         const savedTitle = localStorage.getItem('app_title');
         if (savedTitle) titleEl.innerText = savedTitle;
         titleEl.addEventListener('blur', () => localStorage.setItem('app_title', titleEl.innerText));
         titleEl.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); titleEl.blur(); } });
 
-        let startX = 0, currentX = 0, isDragging = false, isAnimating = false;
-        const swipeArea = document.getElementById('calendarSwipeArea'), grid = document.getElementById('calendarGrid');
+        // --- スワイプとスムーズアニメーションの修正 ---
+        let startX = 0;
+        let currentX = 0;
+        let isDragging = false;
+        let isAnimating = false; // アニメーション中フラグ
+        const swipeArea = document.getElementById('calendarSwipeArea');
+        const grid = document.getElementById('calendarGrid');
 
+        // タッチ開始
         swipeArea.addEventListener('touchstart', (e) => {
-            if (isAnimating) return;
-            startX = e.touches[0].clientX; currentX = startX;
-            isDragging = true; grid.classList.remove('is-animating');
+            if (isAnimating) return; // アニメーション中は無視
+            startX = e.touches[0].clientX;
+            currentX = startX; // 初期化
+            isDragging = true;
+            grid.classList.remove('is-animating'); // 手動移動中はTransitionをオフ
         }, {passive: true});
 
+        // タッチ移動
         swipeArea.addEventListener('touchmove', (e) => {
             if (!isDragging || isAnimating) return;
             currentX = e.touches[0].clientX;
             const diff = currentX - startX;
+            // 指に追従（重い場合は requestAnimationFrame を使うが、単純なTranslateならブラウザが最適化してくれる）
             grid.style.transform = `translateX(${diff}px)`;
         }, {passive: true});
 
+        // タッチ終了
         swipeArea.addEventListener('touchend', (e) => {
             if (!isDragging || isAnimating) return;
             isDragging = false;
-            const diff = currentX - startX, threshold = swipeArea.offsetWidth * 0.25;
+            const diff = currentX - startX;
+            const threshold = swipeArea.offsetWidth * 0.25; // 閾値をコンテナ幅の25%に
+
             if (Math.abs(diff) > threshold) {
-                isAnimating = true; grid.classList.add('is-animating');
-                completeSwipeAnimation(diff > 0 ? -1 : 1);
+                // 切り替え実行
+                isAnimating = true;
+                grid.classList.add('is-animating');
+                const diffMonth = diff > 0 ? -1 : 1; // 右スワイプなら前月(-1)
+                completeSwipeAnimation(diffMonth);
             } else {
-                if (diff !== 0) { grid.classList.add('is-animating'); grid.style.transform = 'translateX(0)'; }
+                // キャンセル（元に戻る）
+                if (diff !== 0) {
+                    grid.classList.add('is-animating');
+                    grid.style.transform = 'translateX(0)';
+                    // Transition完了後にAnimatingフラグをオフにする必要があるが、
+                    // ここでは簡易的に入力を受け付ける状態に戻す
+                }
             }
+            startX = 0; currentX = 0;
         });
 
+        // スワイプ完了時のスライドアウト〜スライドイン処理
         function completeSwipeAnimation(diffMonth) {
             const containerWidth = swipeArea.offsetWidth;
+            // 指が動いた方向（diffMonthとは逆）へスライドアウト
             const exitX = diffMonth > 0 ? -containerWidth : containerWidth;
-            grid.style.transform = `translateX(${exitX}px)`; grid.style.opacity = '0';
+            grid.style.transform = `translateX(${exitX}px)`;
+            grid.style.opacity = '0'; // フェードアウトも併用してスムーズに
+
+            // スライドアウト完了後
             setTimeout(() => {
+                // 1. 完全に非表示にする（Transitionをオフ）
                 grid.classList.remove('is-animating');
+                
+                // 2. 新しい月が来る方向（消えた方向と逆）の画面外へ移動
                 grid.style.transform = `translateX(${-exitX}px)`;
+
+                // 3. データと日付更新
                 viewDate.setMonth(viewDate.getMonth() + diffMonth);
+                
+                // 4. ブラウザが位置変更を認識するのを待ってから描画更新とスライドイン
+                // requestAnimationFrame を2回重ねることで、確実に待機位置への移動をブラウザに認識させる
                 requestAnimationFrame(() => {
+                    // ここで描画更新（画面外にいる状態）
                     renderCalendar();
+
                     requestAnimationFrame(() => {
+                        // 5. アニメーションをオンにして中央に戻す
                         grid.classList.add('is-animating');
-                        grid.style.transform = 'translateX(0)'; grid.style.opacity = '1';
+                        grid.style.transform = 'translateX(0)';
+                        grid.style.opacity = '1';
+                        
+                        // アニメーション完了後にフラグ解
                         setTimeout(() => { isAnimating = false; }, 300);
                     });
                 });
-            }, 300);
+            }, 300); // CSSのTransition時間と合わせる
         }
 
+        // ナビボタン操作（追従なしのスライド）
         function navChangeMonth(diffMonth) {
             if (isAnimating) return;
             isAnimating = true;
+
             const containerWidth = swipeArea.offsetWidth;
             grid.classList.add('is-animating');
+            
+            // 次月(1)なら左(-Width)へ、前月(-1)なら右(Width)へ消える
             const exitX = diffMonth > 0 ? -containerWidth : containerWidth;
-            grid.style.transform = `translateX(${exitX}px)`; grid.style.opacity = '0';
+            grid.style.transform = `translateX(${exitX}px)`;
+            grid.style.opacity = '0';
+
             setTimeout(() => {
                 grid.classList.remove('is-animating');
-                grid.style.transform = `translateX(${-exitX}px)`;
+                grid.style.transform = `translateX(${-exitX}px)`; // 反対側へ
+
                 viewDate.setMonth(viewDate.getMonth() + diffMonth);
+                
                 requestAnimationFrame(() => {
                     renderCalendar();
                     requestAnimationFrame(() => {
                         grid.classList.add('is-animating');
-                        grid.style.transform = 'translateX(0)'; grid.style.opacity = '1';
+                        grid.style.transform = 'translateX(0)';
+                        grid.style.opacity = '1';
                         setTimeout(() => { isAnimating = false; }, 300);
                     });
                 });
             }, 300);
         }
 
+        // --- 以下、ロジック関数群（変更なし） ---
         const dayHeaderHtml = '<div class="day-header">日</div><div class="day-header">月</div><div class="day-header">火</div><div class="day-header">水</div><div class="day-header">木</div><div class="day-header">金</div><div class="day-header">土</div>';
 
         function autoCalcLot() {
-            const pipsStr = document.getElementById('pipsInput').value;
-            const amountStr = document.getElementById('amountInput').value;
-            const pips = Math.abs(parseFloat(pipsStr));
-            const amount = Math.abs(parseInt(amountStr));
+            const pips = Math.abs(parseFloat(document.getElementById('pipsInput').value));
+            const amount = Math.abs(parseInt(document.getElementById('amountInput').value));
             const display = document.getElementById('lotResult');
-            if (!isNaN(pips) && !isNaN(amount) && pips > 0 && amount > 0) {
+            if (pips > 0 && amount > 0) {
                 const lotRaw = (amount / (pips * 100)).toFixed(2);
                 display.innerText = `平均ロット: ${Number(lotRaw)} Lot (1万通貨単位)`;
             } else {
@@ -542,10 +400,14 @@ function closeKeypad() {
         }
 
         function renderCalendar() {
-            const year = viewDate.getFullYear(), month = viewDate.getMonth();
+            const year = viewDate.getFullYear();
+            const month = viewDate.getMonth();
             const headerEl = document.getElementById('calendarHeader');
             if(headerEl) headerEl.innerText = `${year}年 ${month + 1}月`;
+            
+            // グリッドのリセット（ヘッダー再描画）
             grid.innerHTML = dayHeaderHtml;
+
             const firstDay = new Date(year, month, 1).getDay();
             const lastDate = new Date(year, month + 1, 0).getDate();
 
@@ -563,7 +425,9 @@ function closeKeypad() {
                 let html = `<span class="date-num">${d}${hasMemo ? '<span class="memo-dot"></span>' : ''}</span>`;
                 
                 if (currentData[dateKey]) {
-                    const trades = currentData[dateKey].trades || 0, pips = currentData[dateKey].pips || 0, amt = currentData[dateKey].amount || 0;
+                    const trades = currentData[dateKey].trades || 0;
+                    const pips = currentData[dateKey].pips || 0;
+                    const amt = currentData[dateKey].amount || 0;
                     const needsSmallFont = Math.abs(amt) >= 100000 ? 'small-font' : '';
                     const pipsClass = (displayMode === 2) ? 'day-data val-pips large-pips' : 'day-data val-pips';
                     const pipsUnit = (displayMode === 2) ? '<span style="font-size: 0.5rem; margin-left:1px;">pips</span>' : 'pips';
@@ -578,16 +442,17 @@ function closeKeypad() {
                 dayDiv.onclick = () => openModal(dateKey);
                 grid.appendChild(dayDiv);
             }
-            updateSummary(); updateUI();
+            updateSummary();
+            updateUI();
         }
 
         function openModal(dateKey) {
             selectedDateKey = dateKey;
             const parts = dateKey.split('-');
             document.getElementById('selectedDateText').innerText = `${parseInt(parts[1])}月${parseInt(parts[2])}日`;
-            document.getElementById('tradesInput').value = currentData[dateKey]?.trades ?? "";
-            document.getElementById('pipsInput').value = currentData[dateKey]?.pips ?? "";
-            document.getElementById('amountInput').value = currentData[dateKey]?.amount ?? "";
+            document.getElementById('tradesInput').value = currentData[dateKey]?.trades || "";
+            document.getElementById('pipsInput').value = currentData[dateKey]?.pips || "";
+            document.getElementById('amountInput').value = currentData[dateKey]?.amount || "";
             document.getElementById('memoInput').value = currentData[dateKey]?.memo || "";
             document.getElementById('modal').style.display = 'flex';
             autoCalcLot();
@@ -604,18 +469,17 @@ function closeKeypad() {
                 currentData[selectedDateKey] = { trades: trades || 0, pips: pips || 0, amount: amount || 0, memo: memo || "" };
             }
             localStorage.setItem('fx_data_pro', JSON.stringify(currentData));
-            closeModal(); renderCalendar();
+            closeModal();
+            renderCalendar();
         }
 
-        function closeModal() { 
-            document.getElementById('modal').style.display = 'none'; 
-            closeKeypad();
-        }
-        
+        function closeModal() { document.getElementById('modal').style.display = 'none'; }
         function cycleDisplayMode() { displayMode = (displayMode + 1) % 4; localStorage.setItem('display_mode', displayMode); renderCalendar(); }
 
         function updateUI() {
-            const sTrades = document.getElementById('summaryTrades'), sPips = document.getElementById('summaryPips'), sAmt = document.getElementById('summaryAmount');
+            const sTrades = document.getElementById('summaryTrades');
+            const sPips = document.getElementById('summaryPips');
+            const sAmt = document.getElementById('summaryAmount');
             if(sTrades) displayMode === 0 ? sTrades.classList.remove('hidden') : sTrades.classList.add('hidden');
             if(sPips) (displayMode <= 2) ? sPips.classList.remove('hidden') : sPips.classList.add('hidden');
             if(sAmt) [0,1,3].includes(displayMode) ? sAmt.classList.remove('hidden') : sAmt.classList.add('hidden');
@@ -626,54 +490,103 @@ function closeKeypad() {
             const ym = `${viewDate.getFullYear()}-${String(viewDate.getMonth() + 1).padStart(2, '0')}`;
             Object.keys(currentData).forEach(k => {
                 if (k.startsWith(ym)) {
-                    tT += (currentData[k].trades || 0); tP += (currentData[k].pips || 0); tA += (currentData[k].amount || 0);
+                    tT += (currentData[k].trades || 0);
+                    tP += (currentData[k].pips || 0);
+                    tA += (currentData[k].amount || 0);
                 }
             });
             document.getElementById('totalTrades').innerText = `${tT}回`;
             document.getElementById('totalPips').innerText = `${tP.toFixed(1)}pips`;
             const aEl = document.getElementById('totalAmount');
-            aEl.innerText = `¥${tA.toLocaleString()}`; aEl.className = `summary-value ${tA < 0 ? 'negative' : ''}`;
+            aEl.innerText = `¥${tA.toLocaleString()}`;
+            aEl.className = `summary-value ${tA < 0 ? 'negative' : ''}`;
         }
 
-        function showCumulativeModal() {
+function showCumulativeModal() {
             const targetYear = viewDate.getFullYear();
             document.getElementById('cumModalTitle').innerText = `${targetYear}年 累計収支`;
-            const tbody = document.getElementById('cumTableBody'); tbody.innerHTML = "";
-            let cumulative = 0; const monthLabels = [], cumPoints = [];
+            const tbody = document.getElementById('cumTableBody');
+            tbody.innerHTML = "";
+            let cumulative = 0;
+            const monthLabels = [], cumPoints = [];
             for (let m = 0; m < 12; m++) {
-                let monthSum = 0; const ymPrefix = `${targetYear}-${String(m + 1).padStart(2, '0')}`;
+                let monthSum = 0;
+                const ymPrefix = `${targetYear}-${String(m + 1).padStart(2, '0')}`;
                 Object.keys(currentData).forEach(k => { if (k.startsWith(ymPrefix)) monthSum += (currentData[k].amount || 0); });
                 cumulative += monthSum;
                 const row = document.createElement('tr');
                 row.innerHTML = `<td>${m + 1}月</td><td class="${monthSum < 0 ? 'negative' : ''}">${monthSum.toLocaleString()}</td><td class="${cumulative < 0 ? 'negative' : ''}">${cumulative.toLocaleString()}</td>`;
-                tbody.appendChild(row); monthLabels.push(`${m + 1}月`); cumPoints.push(cumulative);
+                tbody.appendChild(row);
+                monthLabels.push(`${m + 1}月`);
+                cumPoints.push(cumulative);
             }
             document.getElementById('cumModal').style.display = 'flex';
             const ctx = document.getElementById('cumChart').getContext('2d');
             if (cumChartInstance) cumChartInstance.destroy();
+
+            // データがすべて0かチェック
             const allZero = cumPoints.every(v => v === 0);
+
             cumChartInstance = new Chart(ctx, {
                 type: 'line',
                 data: { labels: monthLabels, datasets: [{ data: cumPoints, borderColor: '#3498db', backgroundColor: 'rgba(52, 152, 219, 0.1)', borderWidth: 3, fill: true, tension: 0.3 }] },
-                options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: allZero ? 0 : undefined, min: allZero ? 0 : undefined, ticks: { stepSize: allZero ? 1 : undefined, callback: v => '¥' + v.toLocaleString() } } } }
+                options: { 
+                    responsive: true, 
+                    plugins: { legend: { display: false } }, 
+                    scales: { 
+                        y: { 
+                            beginAtZero: true,
+                            // 全データ0の場合は最大・最小を0に固定して刻みを1つにする
+                            max: allZero ? 0 : undefined,
+                            min: allZero ? 0 : undefined,
+                            ticks: { 
+                                stepSize: allZero ? 1 : undefined,
+                                callback: v => '¥' + v.toLocaleString() 
+                            } 
+                        } 
+                    } 
+                }
             });
         }
 
         function showGraph() {
-            const year = viewDate.getFullYear(), month = viewDate.getMonth(), lastDate = new Date(year, month + 1, 0).getDate();
-            const labels = [], dataPoints = []; let cumulativeBalance = 0;
+            const year = viewDate.getFullYear();
+            const month = viewDate.getMonth();
+            const lastDate = new Date(year, month + 1, 0).getDate();
+            const labels = [], dataPoints = [];
+            let cumulativeBalance = 0;
             for (let d = 1; d <= lastDate; d++) {
                 const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-                labels.push(d); cumulativeBalance += (currentData[dateKey]?.amount || 0); dataPoints.push(cumulativeBalance);
+                labels.push(d);
+                cumulativeBalance += (currentData[dateKey]?.amount || 0);
+                dataPoints.push(cumulativeBalance);
             }
             document.getElementById('graphModal').style.display = 'flex';
             const ctx = document.getElementById('balanceChart').getContext('2d');
             if (myChart) myChart.destroy();
+
+            // データがすべて0かチェック
             const allZero = dataPoints.every(v => v === 0);
+
             myChart = new Chart(ctx, {
                 type: 'line',
                 data: { labels: labels, datasets: [{ data: dataPoints, borderColor: '#3498db', backgroundColor: 'rgba(52, 152, 219, 0.1)', fill: true, tension: 0.3 }] },
-                options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: allZero ? 0 : undefined, min: allZero ? 0 : undefined, ticks: { stepSize: allZero ? 1 : undefined, callback: v => '¥' + v.toLocaleString() } }, x: { ticks: { maxRotation: 0, minRotation: 0, autoSkip: true, maxTicksLimit: 10 } } } }
+                options: { 
+                    responsive: true, 
+                    plugins: { legend: { display: false } }, 
+                    scales: { 
+                        y: { 
+                            beginAtZero: true,
+                            max: allZero ? 0 : undefined,
+                            min: allZero ? 0 : undefined,
+                            ticks: { 
+                                stepSize: allZero ? 1 : undefined,
+                                callback: v => '¥' + v.toLocaleString() 
+                            } 
+                        }, 
+                        x: { ticks: { maxRotation: 0, minRotation: 0, autoSkip: true, maxTicksLimit: 10 } } 
+                    } 
+                }
             });
         }
         function exportCSV() {
@@ -684,15 +597,22 @@ function closeKeypad() {
             });
             const fileName = `FX収支_${new Date().toISOString().slice(0,10)}.csv`;
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = fileName; link.click();
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = fileName;
+            link.click();
         }
 
         function importCSV(input) {
-            const file = input.files[0]; if (!file) return;
+            const file = input.files[0];
+            if (!file) return;
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
-                    const text = e.target.result, lines = text.split(/\r?\n/), newData = {}; let count = 0;
+                    const text = e.target.result;
+                    const lines = text.split(/\r?\n/);
+                    const newData = {};
+                    let count = 0;
                     for (let i = 1; i < lines.length; i++) {
                         const cols = lines[i].split(",");
                         if (cols.length >= 4) {
@@ -704,14 +624,18 @@ function closeKeypad() {
                         }
                     }
                     if (count > 0 && confirm(count + "件復元しますか？")) {
-                        currentData = newData; localStorage.setItem('fx_data_pro', JSON.stringify(currentData));
-                        renderCalendar(); alert("復元完了");
+                        currentData = newData;
+                        localStorage.setItem('fx_data_pro', JSON.stringify(currentData));
+                        renderCalendar();
+                        alert("復元完了");
                     }
                 } catch (err) { alert("エラー"); }
             };
-            reader.readAsText(file, "UTF-8"); input.value = ""; 
+            reader.readAsText(file, "UTF-8");
+            input.value = ""; 
         }
 
+        // 初期描画
         renderCalendar();
     </script>
 </body>
