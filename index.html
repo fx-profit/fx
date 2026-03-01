@@ -170,25 +170,19 @@
         .hidden { display: none !important; }
 
 
+
 /* --- カスタムテンキーのスタイル修正版 --- */
 .keypad-container {
     display: none;
     position: fixed;
     bottom: 0; left: 0; width: 100%;
+    /* GBoard風の薄いグレー (#eceff1 や #f1f3f4) */
     background: #f1f3f4; 
     padding: 8px 8px calc(env(safe-area-inset-bottom, 0px) + 8px) 8px;
-    box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+    box-shadow: 0 -1px 3px rgba(0,0,0,0.1);
     z-index: 2000;
     box-sizing: border-box;
-    animation: slideUp 0.15s ease-out;
-    /* 追加：テンキー自体の高さを固定し、背後のスクロールを阻害しない設定 */
-    touch-action: none; 
-}
-
-/* 追加：テンキー表示中にモーダルの中身が隠れないようにするためのクラス */
-.modal-content.with-keypad {
-    padding-bottom: 300px; /* テンキーの高さ分、下側に余白を作る */
-    transition: padding 0.2s ease;
+    animation: slideUp 0.2s ease-out;
 }
 
 .keypad-grid button {
@@ -348,19 +342,16 @@ let currentData = JSON.parse(localStorage.getItem('fx_data_pro')) || {};
         // タッチデバイスかどうかを判定
         const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
-function openKeypad(id) {
+        function openKeypad(id) {
+            // スマホ（タッチデバイス）の時だけカスタムテンキーを表示
             if (isTouchDevice) {
                 activeInputId = id;
                 const input = document.getElementById(id);
-                input.readOnly = true;
+                input.readOnly = true; // システムキーボードを阻止
                 document.getElementById('customKeypad').style.display = 'block';
-                
-                // モーダルのコンテンツに余白を追加して、スクロール可能にする
-                document.querySelector('.modal-content').classList.add('with-keypad');
-                
-                // 入力欄が隠れないように、少しだけスクロール位置を調整（必要に応じて）
-                input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                input.focus();
             } else {
+                // PCの時はreadonlyを解除して通常のキーボードを使わせる
                 const input = document.getElementById(id);
                 input.readOnly = false;
                 closeKeypad();
@@ -370,9 +361,6 @@ function openKeypad(id) {
         function closeKeypad() {
             document.getElementById('customKeypad').style.display = 'none';
             activeInputId = null;
-            // 余白を元に戻す
-            const modalContent = document.querySelector('.modal-content');
-            if(modalContent) modalContent.classList.remove('with-keypad');
         }
 
         // --- HTMLのinput部分も少し修正（初期状態のreadonlyを削除） ---
