@@ -193,8 +193,8 @@ touch-action: none;
 
 /* 追加：テンキー表示中にモーダルの中身が隠れないようにするためのクラス */
 .modal-content.with-keypad {
-    padding-bottom: 300px; /* テンキーの高さ分、下側に余白を作る */
-    transition: padding 0.2s ease;
+padding-bottom: 350px !important; /* テンキーより少し多めに余白を取る */
+    transition: padding 0.3s ease; /* スムーズな動きに */
 }
 
 
@@ -356,31 +356,41 @@ let currentData = JSON.parse(localStorage.getItem('fx_data_pro')) || {};
         const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
 function openKeypad(id) {
-            if (isTouchDevice) {
-                activeInputId = id;
-                const input = document.getElementById(id);
-                input.readOnly = true;
-                document.getElementById('customKeypad').style.display = 'block';
-                
-                // モーダルのコンテンツに余白を追加して、スクロール可能にする
-                document.querySelector('.modal-content').classList.add('with-keypad');
-                
-                // 入力欄が隠れないように、少しだけスクロール位置を調整（必要に応じて）
+    if (isTouchDevice) {
+        activeInputId = id;
+        const input = document.getElementById(id);
+        input.readOnly = true;
+        
+        // テンキーを表示
+        document.getElementById('customKeypad').style.display = 'block';
+        
+        // 【重要】モーダルの中身を底上げする
+        const modalContent = document.querySelector('.modal-content');
+        if (modalContent) {
+            modalContent.classList.add('with-keypad');
+            
+            // 入力中の項目が隠れないように自動スクロール
+            setTimeout(() => {
                 input.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            } else {
-                const input = document.getElementById(id);
-                input.readOnly = false;
-                closeKeypad();
-            }
+            }, 100);
         }
+    } else {
+        const input = document.getElementById(id);
+        input.readOnly = false;
+        closeKeypad();
+    }
+}
 
-        function closeKeypad() {
-            document.getElementById('customKeypad').style.display = 'none';
-            activeInputId = null;
-            // 余白を元に戻す
-            const modalContent = document.querySelector('.modal-content');
-            if(modalContent) modalContent.classList.remove('with-keypad');
-        }
+function closeKeypad() {
+    document.getElementById('customKeypad').style.display = 'none';
+    activeInputId = null;
+    
+    // 【重要】底上げを解除する
+    const modalContent = document.querySelector('.modal-content');
+    if (modalContent) {
+        modalContent.classList.remove('with-keypad');
+    }
+}
 
         // --- HTMLのinput部分も少し修正（初期状態のreadonlyを削除） ---
 
