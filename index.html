@@ -180,6 +180,17 @@
     animation: slideUp 0.15s ease-out;
 touch-action: none;
 }
+
+/* --- ここが重要：ボタンを並べる設定 --- */
+.keypad-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3列に並べる */
+    gap: 8px; /* ボタン同士の間隔 */
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+
 /* 追加：テンキー表示中にモーダルの中身が隠れないようにするためのクラス */
 .modal-content.with-keypad {
     padding-bottom: 300px; /* テンキーの高さ分、下側に余白を作る */
