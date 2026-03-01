@@ -1,4 +1,4 @@
-const CACHE_NAME = 'fx-profit-v1';
+const CACHE_NAME = 'fx-profit';
 // キャッシュするファイルのリスト
 // service-worker.jsファイルからの相対パスで指定
 const urlsToCache = [
@@ -48,4 +48,5 @@ self.addEventListener('activate', (event) => {
     })
   );
 });
+
 
