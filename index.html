@@ -150,6 +150,23 @@
 
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; padding: 15px; box-sizing: border-box; }
         .modal-content { background: white; padding: 20px; border-radius: 20px; width: 100%; max-width: 340px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; }
+
+        /* テンキー表示中：bodyごとスクロール可能にする */
+        body.keypad-open { overflow-y: auto !important; }
+        body.keypad-open #modal {
+            position: static !important;
+            height: auto !important;
+            background: rgba(0,0,0,0.05) !important;
+            padding-bottom: 240px !important;
+            display: block !important;
+            overflow-y: visible !important;
+        }
+        body.keypad-open #modal .modal-content {
+            max-height: none !important;
+            overflow-y: visible !important;
+            margin: 60px auto 0 auto;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
         
         .cum-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 0.85rem; }
         .cum-table th, .cum-table td { border: 1px solid #ddd; padding: 8px; text-align: center; }
@@ -359,15 +376,12 @@ let currentData = JSON.parse(localStorage.getItem('fx_data_pro')) || {};
                 activeInputId = id;
                 const input = document.getElementById(id);
                 input.readOnly = true; // システムキーボードを阻止
-                const keypad = document.getElementById('customKeypad');
-                keypad.style.display = 'block';
-                // テンキーの高さ分だけmodal-contentに余白を追加してスクロール可能にする
-                const keypadH = keypad.offsetHeight || 220;
-                const modalContent = document.querySelector('#modal .modal-content');
-                if (modalContent) modalContent.style.paddingBottom = keypadH + 'px';
+                document.getElementById('customKeypad').style.display = 'block';
+                // bodyにクラスを付与してモーダルをbodyフローに乗せ、bodyごとスクロール可能にする
+                document.body.classList.add('keypad-open');
                 input.focus();
-                // フォーカスした入力欄が隠れないようスクロール
-                setTimeout(() => input.scrollIntoView({ behavior: 'smooth', block: 'center' }), 50);
+                // フォーカスした入力欄が見えるようにスクロール
+                setTimeout(() => input.scrollIntoView({ behavior: 'smooth', block: 'center' }), 80);
             } else {
                 // PCの時はreadonlyを解除して通常のキーボードを使わせる
                 const input = document.getElementById(id);
@@ -379,9 +393,8 @@ let currentData = JSON.parse(localStorage.getItem('fx_data_pro')) || {};
         function closeKeypad() {
             document.getElementById('customKeypad').style.display = 'none';
             activeInputId = null;
-            // テンキーを閉じたら余白をリセット
-            const modalContent = document.querySelector('#modal .modal-content');
-            if (modalContent) modalContent.style.paddingBottom = '';
+            // bodyクラスを外してモーダルを通常のfixedに戻す
+            document.body.classList.remove('keypad-open');
         }
 
         // --- HTMLのinput部分も少し修正（初期状態のreadonlyを削除） ---
