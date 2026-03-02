@@ -149,10 +149,13 @@
         .cum-btn { background: #008080; grid-column: span 2; }
 
         /* 入力パネル：画面下部に固定、テンキーの上に重なる */
-        .modal { display: none; }
         #modal {
+            display: none;
             position: fixed;
-            bottom: 0; left: 0; width: 100%;
+            bottom: 0;
+            width: 100%;
+            max-width: 500px;
+            left: 50%; transform: translateX(-50%);
             z-index: 1000;
             background: white;
             border-top: 1px solid #ddd;
@@ -160,12 +163,10 @@
             box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
             padding: 16px 16px 24px 16px;
             box-sizing: border-box;
-            max-width: 500px;
-            left: 50%; transform: translateX(-50%);
         }
         #modal.open { display: block; }
         /* テンキー表示中は入力パネルをテンキーの高さ分上にずらす */
-        #modal.keypad-visible {
+        #modal.open.keypad-visible {
             bottom: var(--keypad-height, 220px);
             transition: bottom 0.2s ease-out;
         }
