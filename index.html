@@ -730,7 +730,9 @@ let currentData = JSON.parse(localStorage.getItem('fx_data_pro')) || {};
                         if (cols.length >= 4) {
                             const date = normalizeDateKey(cols[0]);
                             if (date) {
-                                newData[date] = { trades: parseInt(cols[1]) || 0, pips: parseFloat(cols[2]) || 0, amount: parseInt(cols[3]) || 0, memo: cols[4] || "" };
+                                // Excelが桁区切りカンマを付けた数値（例: "1,234"）に対応
+                                const cleanAmount = (cols[3] || "").replace(/,/g, '');
+                                newData[date] = { trades: parseInt(cols[1]) || 0, pips: parseFloat(cols[2]) || 0, amount: parseInt(cleanAmount) || 0, memo: cols[4] || "" };
                                 count++;
                             }
                         }
