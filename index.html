@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -358,8 +359,15 @@ let currentData = JSON.parse(localStorage.getItem('fx_data_pro')) || {};
                 activeInputId = id;
                 const input = document.getElementById(id);
                 input.readOnly = true; // システムキーボードを阻止
-                document.getElementById('customKeypad').style.display = 'block';
+                const keypad = document.getElementById('customKeypad');
+                keypad.style.display = 'block';
+                // テンキーの高さ分だけmodal-contentに余白を追加してスクロール可能にする
+                const keypadH = keypad.offsetHeight || 220;
+                const modalContent = document.querySelector('#modal .modal-content');
+                if (modalContent) modalContent.style.paddingBottom = keypadH + 'px';
                 input.focus();
+                // フォーカスした入力欄が隠れないようスクロール
+                setTimeout(() => input.scrollIntoView({ behavior: 'smooth', block: 'center' }), 50);
             } else {
                 // PCの時はreadonlyを解除して通常のキーボードを使わせる
                 const input = document.getElementById(id);
@@ -371,6 +379,9 @@ let currentData = JSON.parse(localStorage.getItem('fx_data_pro')) || {};
         function closeKeypad() {
             document.getElementById('customKeypad').style.display = 'none';
             activeInputId = null;
+            // テンキーを閉じたら余白をリセット
+            const modalContent = document.querySelector('#modal .modal-content');
+            if (modalContent) modalContent.style.paddingBottom = '';
         }
 
         // --- HTMLのinput部分も少し修正（初期状態のreadonlyを削除） ---
@@ -754,7 +765,6 @@ let currentData = JSON.parse(localStorage.getItem('fx_data_pro')) || {};
     </script>
 </body>
 </html>
-
 
 
 
