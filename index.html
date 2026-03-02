@@ -148,25 +148,28 @@
         .import-btn { background: #e67e22; }
         .cum-btn { background: #008080; grid-column: span 2; }
 
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; padding: 15px; box-sizing: border-box; }
-        .modal-content { background: white; padding: 20px; border-radius: 20px; width: 100%; max-width: 340px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; }
-
-        /* テンキー表示中：bodyごとスクロール可能にする */
-        body.keypad-open { overflow-y: auto !important; }
-        body.keypad-open #modal {
-            position: static !important;
-            height: auto !important;
-            background: rgba(0,0,0,0.05) !important;
-            padding-bottom: 240px !important;
-            display: block !important;
-            overflow-y: visible !important;
+        /* 入力パネル：画面下部に固定、テンキーの上に重なる */
+        .modal { display: none; }
+        #modal {
+            position: fixed;
+            bottom: 0; left: 0; width: 100%;
+            z-index: 1000;
+            background: white;
+            border-top: 1px solid #ddd;
+            border-radius: 20px 20px 0 0;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+            padding: 16px 16px 24px 16px;
+            box-sizing: border-box;
+            max-width: 500px;
+            left: 50%; transform: translateX(-50%);
         }
-        body.keypad-open #modal .modal-content {
-            max-height: none !important;
-            overflow-y: visible !important;
-            margin: 60px auto 0 auto;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        #modal.open { display: block; }
+        /* テンキー表示中は入力パネルをテンキーの高さ分上にずらす */
+        #modal.keypad-visible {
+            bottom: var(--keypad-height, 220px);
+            transition: bottom 0.2s ease-out;
         }
+        .modal-content { padding: 0; }
         
         .cum-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 0.85rem; }
         .cum-table th, .cum-table td { border: 1px solid #ddd; padding: 8px; text-align: center; }
@@ -291,9 +294,9 @@
         </div>
     </div>
 
-    <div id="modal" class="modal" onclick="if(event.target==this)closeModal()">
+    <div id="modal">
         <div class="modal-content">
-            <h3 id="selectedDateText" style="margin-top:0; color:var(--header-bg);">記録</h3>
+            <h3 id="selectedDateText" style="margin-top:0; color:var(--header-bg); margin-bottom:12px;">記録</h3>
 <label>トレード回数</label>
 <input type="text" id="tradesInput" placeholder="0" onclick="openKeypad('tradesInput')">
 
@@ -305,7 +308,7 @@
             
             <div id="lotResult" class="lot-display">平均ロット: ---</div>
             <label>メモ</label>
-            <textarea id="memoInput" rows="3" onfocus="closeKeypad()"></textarea>
+            <textarea id="memoInput" rows="2" onfocus="closeKeypad()"></textarea>
             
             <div class="btn-group">
                 <button class="modal-btn save-btn" onclick="saveData()">保存</button>
@@ -376,12 +379,13 @@ let currentData = JSON.parse(localStorage.getItem('fx_data_pro')) || {};
                 activeInputId = id;
                 const input = document.getElementById(id);
                 input.readOnly = true; // システムキーボードを阻止
-                document.getElementById('customKeypad').style.display = 'block';
-                // bodyにクラスを付与してモーダルをbodyフローに乗せ、bodyごとスクロール可能にする
-                document.body.classList.add('keypad-open');
+                const keypad = document.getElementById('customKeypad');
+                keypad.style.display = 'block';
+                // テンキーの高さを CSS変数にセットし、入力パネルを上にずらす
+                const keypadH = keypad.offsetHeight || 220;
+                document.documentElement.style.setProperty('--keypad-height', keypadH + 'px');
+                document.getElementById('modal').classList.add('keypad-visible');
                 input.focus();
-                // フォーカスした入力欄が見えるようにスクロール
-                setTimeout(() => input.scrollIntoView({ behavior: 'smooth', block: 'center' }), 80);
             } else {
                 // PCの時はreadonlyを解除して通常のキーボードを使わせる
                 const input = document.getElementById(id);
@@ -393,8 +397,7 @@ let currentData = JSON.parse(localStorage.getItem('fx_data_pro')) || {};
         function closeKeypad() {
             document.getElementById('customKeypad').style.display = 'none';
             activeInputId = null;
-            // bodyクラスを外してモーダルを通常のfixedに戻す
-            document.body.classList.remove('keypad-open');
+            document.getElementById('modal').classList.remove('keypad-visible');
         }
 
         // --- HTMLのinput部分も少し修正（初期状態のreadonlyを削除） ---
@@ -566,7 +569,7 @@ let currentData = JSON.parse(localStorage.getItem('fx_data_pro')) || {};
             document.getElementById('pipsInput').value = currentData[dateKey]?.pips ?? "";
             document.getElementById('amountInput').value = currentData[dateKey]?.amount ?? "";
             document.getElementById('memoInput').value = currentData[dateKey]?.memo || "";
-            document.getElementById('modal').style.display = 'flex';
+            document.getElementById('modal').classList.add('open');
             autoCalcLot();
         }
 
@@ -585,8 +588,8 @@ let currentData = JSON.parse(localStorage.getItem('fx_data_pro')) || {};
             closeModal(); renderCalendar();
         }
 
-        function closeModal() { 
-            document.getElementById('modal').style.display = 'none'; 
+        function closeModal() {
+            document.getElementById('modal').classList.remove('open');
             closeKeypad();
         }
         
