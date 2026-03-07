@@ -213,9 +213,18 @@
         </div>
     </div>
 
-    <div id="modal" class="modal" onclick="if(event.target==this)closeModal()">
+    <!-- <div id="modal" class="modal" onclick="if(event.target==this)closeModal()">
         <div class="modal-content">
             <h3 id="selectedDateText" style="margin-top:0; color:var(--header-bg);">記録</h3>
+            -->
+    <div id="modal" class="modal" onclick="if(event.target==this)closeModal()">
+    <div class="modal-content" id="modalContent">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+            <button onclick="shiftModalDate(-1)" style="background:none; border:none; font-size:1.4rem; cursor:pointer; padding:0 8px; color:var(--header-bg);">◀</button>
+            <h3 id="selectedDateText" style="margin:0; color:var(--header-bg);"></h3>
+            <button onclick="shiftModalDate(1)" style="background:none; border:none; font-size:1.4rem; cursor:pointer; padding:0 8px; color:var(--header-bg);">▶</button>
+        </div>
+        
             <label>トレード回数</label>
             <input type="number" id="tradesInput" inputmode="numeric" placeholder="0">
             <label>獲得pips</label>
@@ -486,6 +495,33 @@
         }
 
         function closeModal() { document.getElementById('modal').style.display = 'none'; }
+
+function shiftModalDate(diff) {
+    const d = new Date(selectedDateKey);
+    d.setDate(d.getDate() + diff);
+    const newKey = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    openModal(newKey);
+}
+
+// モーダル内スワイプ
+(function() {
+    const content = document.getElementById('modalContent');
+    let mStartX = 0, mMoved = false;
+    content.addEventListener('touchstart', e => {
+        mStartX = e.touches[0].clientX;
+        mMoved = false;
+    }, {passive: true});
+    content.addEventListener('touchmove', e => {
+        if (Math.abs(e.touches[0].clientX - mStartX) > 10) mMoved = true;
+    }, {passive: true});
+    content.addEventListener('touchend', e => {
+        if (!mMoved) return;
+        const diff = e.changedTouches[0].clientX - mStartX;
+        if (Math.abs(diff) > 50) shiftModalDate(diff > 0 ? -1 : 1);
+    }, {passive: true});
+})();
+
+       
         function cycleDisplayMode() { displayMode = (displayMode + 1) % 4; localStorage.setItem('display_mode', displayMode); renderCalendar(); }
 
         function updateUI() {
