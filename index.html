@@ -617,7 +617,7 @@ function showCumulativeModal() {
 
             cumChartInstance = new Chart(ctx, {
                 type: 'line',
-                data: { labels: monthLabels, datasets: [{ data: cumPoints, borderColor: '#3498db', backgroundColor: 'rgba(52, 152, 219, 0.1)', borderWidth: 3, fill: true, tension: 0.3 }] },
+                data: { labels: monthLabels, datasets: [{ data: cumPoints, borderColor: '#3498db', backgroundColor: 'rgba(52, 152, 219, 0.1)', borderWidth: 3, fill: true, tension: 0 }] },
                 options: { 
                     responsive: true, 
                     plugins: { legend: { display: false } }, 
@@ -658,7 +658,7 @@ function showCumulativeModal() {
 
             myChart = new Chart(ctx, {
                 type: 'line',
-                data: { labels: labels, datasets: [{ data: dataPoints, borderColor: '#3498db', backgroundColor: 'rgba(52, 152, 219, 0.1)', fill: true, tension: 0.3 }] },
+                data: { labels: labels, datasets: [{ data: dataPoints, borderColor: '#3498db', backgroundColor: 'rgba(52, 152, 219, 0.1)', fill: true, tension: 0 }] },
                 options: { 
                     responsive: true, 
                     plugins: { legend: { display: false } }, 
