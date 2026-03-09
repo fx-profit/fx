@@ -75,8 +75,8 @@
         }
 
         .calendar-nav { display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 500px; margin-bottom: 8px; }
-        .nav-btn { background: var(--card-bg); border: none; padding: 10px 18px; border-radius: 10px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.1); cursor: pointer; }
-        #calendarHeader { font-size: 1.1rem; font-weight: bold; }
+        .nav-btn { background: none; border: none; padding: 10px 13px; font-size: 1rem; cursor: pointer; color: #999; }
+        #calendarHeader { font-size: 1.2rem; font-weight: bold; }
 
         .calendar-container { 
             background: var(--card-bg); 
@@ -112,13 +112,13 @@
         .day { background: white; aspect-ratio: 1 / 1.35; display: flex; flex-direction: column; padding: 2px 3px; cursor: pointer; position: relative; justify-content: flex-start; overflow: hidden; box-sizing: border-box; }
         .day.other-month { background-color: #fafafa; color: #ccc; pointer-events: none; }
         
-        .date-num { font-size: 0.9rem; font-weight: bold; color: #7f8c8d; margin-bottom: 1px; display: flex; align-items: center; }
+        .date-num { text-align: center; font-size: 0.9rem; font-weight: bold; color: #7f8c8d; margin-bottom: 1px; display: flex; align-items: center; justify-content: center; width: 100%; }
         .memo-dot { width: 4px; height: 4px; background-color: #bdc3c7; border-radius: 50%; margin-left: 3px; display: inline-block; }
 
         .data-container { display: flex; flex-direction: column; align-items: flex-end; justify-content: center; flex-grow: 1; width: 100%; overflow: hidden; }
         .day-data { text-align: right; width: 100%; line-height: 1.1; white-space: nowrap; letter-spacing: -0.02em; }
         .val-trades { font-size: 0.5rem; color: #7f8c8d; }
-        .val-pips { font-size: 0.6rem; color: var(--positive); }
+        .val-pips { font-size: 0.6rem; color: #008080; }
         .val-amount { font-size: 0.8rem; color: var(--primary); font-weight: bold; }
         
         .large-pips { 
