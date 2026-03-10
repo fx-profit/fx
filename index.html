@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -112,24 +113,24 @@
         .day { background: white; aspect-ratio: 1 / 1.35; display: flex; flex-direction: column; padding: 2px 3px; cursor: pointer; position: relative; justify-content: flex-start; overflow: hidden; box-sizing: border-box; }
         .day.other-month { background-color: #fafafa; color: #ccc; pointer-events: none; }
         
-        .date-num { text-align: center; font-size: 0.9rem; font-weight: bold; color: #7f8c8d; margin-bottom: 1px; display: flex; align-items: center; justify-content: center; width: 100%; }
+        .date-num { text-align: center; font-size: 0.9rem; font-weight: bold; color: #7f8c8d; margin-bottom: 0; display: flex; align-items: center; justify-content: center; width: 100%; }
         .memo-dot { width: 4px; height: 4px; background-color: #bdc3c7; border-radius: 50%; margin-left: 3px; display: inline-block; }
 
         .data-container { display: flex; flex-direction: column; align-items: flex-end; justify-content: center; flex-grow: 1; width: 100%; overflow: hidden; }
-        .day-data { text-align: right; width: 100%; line-height: 1.1; white-space: nowrap; letter-spacing: -0.02em; }
+        .day-data { text-align: center; width: 100%; line-height: 1.1; white-space: nowrap; letter-spacing: -0.02em; }
         .val-trades { font-size: 0.5rem; color: #7f8c8d; }
-        .val-pips { font-size: 0.6rem; color: #008080; }
+        .val-pips { font-size: 0.6rem; color: #008080; margin-bottom: 3px; }
         .val-amount { font-size: 0.8rem; color: var(--primary); font-weight: bold; }
         
         .large-pips { 
             font-size: 0.85rem !important; 
             font-weight: bold; 
-            text-align: right;
+            text-align: center;
             width: 100%;
             margin-top: 4px;
             letter-spacing: -0.05em;
             display: flex;
-            justify-content: flex-end;
+            justify-content: center;
             align-items: baseline;
             gap: 1px;
         }
@@ -168,6 +169,10 @@
         .modal-btn { flex: 1; padding: 15px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 1rem; }
         .save-btn { background: var(--primary); color: white; }
         .cancel-btn { background: #eee; color: #333; }
+        .clear-btn { background: var(--negative); color: white; }
+        .input-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+        .input-row label { font-size: 0.8rem; color: #666; font-weight: bold; white-space: nowrap; min-width: 80px; margin: 0; }
+        .input-row input { margin: 0; flex: 1; }
         .hidden { display: none !important; }
     </style>
 </head>
@@ -222,17 +227,24 @@
             <button onclick="shiftModalDate(1)" style="background:none; border:none; font-size:1rem; cursor:pointer; padding:0 8px; color:var(--header-bg);">▶</button>
         </div>
         
-            <label>トレード回数</label>
-            <input type="number" id="tradesInput" inputmode="numeric" placeholder="0">
-            <label>獲得pips</label>
-            <input type="number" id="pipsInput" step="0.1" inputmode="decimal" placeholder="0.0" oninput="autoCalcLot()">
-            <label>当日収支</label>
-            <input type="number" id="amountInput" inputmode="decimal" pattern="[0-9]*" placeholder="0" oninput="autoCalcLot()">
+            <div class="input-row">
+                <label>トレード回数</label>
+                <input type="number" id="tradesInput" inputmode="numeric" placeholder="0">
+            </div>
+            <div class="input-row">
+                <label>獲得pips</label>
+                <input type="number" id="pipsInput" step="0.1" inputmode="decimal" placeholder="0.0" oninput="autoCalcLot()">
+            </div>
+            <div class="input-row">
+                <label>当日収支</label>
+                <input type="number" id="amountInput" inputmode="decimal" pattern="[0-9]*" placeholder="0" oninput="autoCalcLot()">
+            </div>
             <div id="lotResult" class="lot-display">平均ロット: ---</div>
             <label>メモ</label>
             <textarea id="memoInput" rows="3"></textarea>
             <div class="btn-group">
                 <button class="modal-btn save-btn" onclick="saveData()">保存</button>
+                <button class="modal-btn clear-btn" onclick="clearModalData()">消去</button>
                 <button class="modal-btn cancel-btn" onclick="closeModal()">戻る</button>
             </div>
         </div>
@@ -266,6 +278,8 @@
         let viewDate = new Date(); 
         let selectedDateKey = "";
         let myChart = null;
+
+
         let cumChartInstance = null;
 
         const titleEl = document.getElementById('appTitle');
@@ -493,6 +507,13 @@
         }
 
         function closeModal() { document.getElementById('modal').style.display = 'none'; }
+        function clearModalData() {
+            document.getElementById('tradesInput').value = '';
+            document.getElementById('pipsInput').value = '';
+            document.getElementById('amountInput').value = '';
+            document.getElementById('memoInput').value = '';
+            document.getElementById('lotResult').innerText = '平均ロット: ---';
+        }
 
 function shiftModalDate(diff) {
     const content = document.getElementById('modalContent');
@@ -613,7 +634,7 @@ function showCumulativeModal() {
 
             cumChartInstance = new Chart(ctx, {
                 type: 'line',
-                data: { labels: monthLabels, datasets: [{ data: cumPoints, borderColor: '#3498db', backgroundColor: 'rgba(52, 152, 219, 0.1)', borderWidth: 3, fill: true, tension: 0 }] },
+                data: { labels: monthLabels, datasets: [{ data: cumPoints, borderColor: '#3498db', fill: { target: 'origin', above: 'rgba(52,152,219,0.15)', below: 'rgba(231,76,60,0.15)' }, tension: 0, borderWidth: 3 }] },
                 options: { 
                     responsive: true, 
                     plugins: { legend: { display: false } }, 
@@ -654,7 +675,7 @@ function showCumulativeModal() {
 
             myChart = new Chart(ctx, {
                 type: 'line',
-                data: { labels: labels, datasets: [{ data: dataPoints, borderColor: '#3498db', backgroundColor: 'rgba(52, 152, 219, 0.1)', fill: true, tension: 0 }] },
+                data: { labels: labels, datasets: [{ data: dataPoints, borderColor: '#3498db', fill: { target: 'origin', above: 'rgba(52,152,219,0.15)', below: 'rgba(231,76,60,0.15)' }, tension: 0 }] },
                 options: { 
                     responsive: true, 
                     plugins: { legend: { display: false } }, 
@@ -765,5 +786,3 @@ if (cur) lines.push(cur);
     </script>
 </body>
 </html>
-
-
