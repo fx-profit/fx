@@ -228,15 +228,15 @@
         </div>
         
             <div class="input-row">
-                <label>トレード回数</label>
+                <label style="color: #7f8c8d">トレード回数</label>
                 <input type="number" id="tradesInput" inputmode="numeric" placeholder="0">
             </div>
             <div class="input-row">
-                <label>獲得pips</label>
+                <label style="color: #008080>獲得pips</label>
                 <input type="number" id="pipsInput" step="0.1" inputmode="decimal" placeholder="0.0" oninput="autoCalcLot()">
             </div>
             <div class="input-row">
-                <label>当日収支</label>
+                <label style="color: var(--primary);">当日収支</label>
                 <input type="number" id="amountInput" inputmode="decimal" pattern="[0-9]*" placeholder="0" oninput="autoCalcLot()">
             </div>
             <div id="lotResult" class="lot-display">平均ロット: ---</div>
