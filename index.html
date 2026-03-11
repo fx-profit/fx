@@ -554,26 +554,37 @@
         function kpInput(val) {
             if (!activeInputId) return;
             const input = document.getElementById(activeInputId);
-            if (val === '.' && input.value.includes('.')) return;
+            // type="number"はドットを含む途中の文字列を拒否するためtextに切り替えて入力
+            const prevType = input.type;
+            input.type = 'text';
+            if (val === '.' && input.value.includes('.')) {
+                input.type = prevType;
+                return;
+            }
             input.value += val;
+            input.type = prevType;
             autoCalcLot();
         }
 
         function kpDelete() {
             if (!activeInputId) return;
             const input = document.getElementById(activeInputId);
+            input.type = 'text';
             input.value = input.value.slice(0, -1);
+            input.type = 'number';
             autoCalcLot();
         }
 
         function kpToggleMinus() {
             if (!activeInputId) return;
             const input = document.getElementById(activeInputId);
+            input.type = 'text';
             if (input.value.startsWith('-')) {
                 input.value = input.value.substring(1);
             } else {
                 input.value = input.value !== "" ? '-' + input.value : '-';
             }
+            input.type = 'number';
             autoCalcLot();
         }
 
