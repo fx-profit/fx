@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -194,19 +193,19 @@
             letter-spacing: -0.02em;
         }
 
-        .val-trades  { font-size: 0.5rem; color: #7f8c8d; }
-        .val-pips    { font-size: 0.6rem; color: var(--positive); margin-bottom: 3px; }
-        .val-amount  { font-size: 0.8rem; color: var(--primary); font-weight: bold; }
+        .val-trades { font-size: 0.5rem; color: #7f8c8d; }
+        .val-pips   { font-size: 0.6rem; color: var(--positive); margin-bottom: 3px; }
+        .val-amount { font-size: 0.8rem; color: var(--primary); font-weight: bold; }
 
         .large-pips {
             font-size: 0.85rem !important;
             font-weight: bold;
-            text-align: right;
+            text-align: center;
             width: 100%;
             margin-top: 4px;
             letter-spacing: -0.05em;
             display: flex;
-            justify-content: flex-end;
+            justify-content: center;
             align-items: baseline;
             gap: 1px;
         }
@@ -295,7 +294,7 @@
         /* ===== 累計テーブル ===== */
         .cum-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 0.85rem; }
         .cum-table th,
-        .cum-table td  { border: 1px solid #ddd; padding: 4px; text-align: center; }
+        .cum-table td         { border: 1px solid #ddd; padding: 4px; text-align: center; }
         .cum-table th,
         .cum-table td:first-child { background: #f8f9fa; }
 
@@ -425,7 +424,7 @@
         </div>
 
         <div class="action-group">
-            <button class="btn cum-btn" onclick="showCumulativeModal()">累計を表示</button>
+            <button class="btn cum-btn" onclick="showCumulativeModal()">年間累計を表示</button>
             <button class="btn toggle-btn" onclick="cycleDisplayMode()">表示切替</button>
             <button class="btn graph-btn" onclick="showGraph()">グラフ表示</button>
             <button class="btn export-btn" onclick="exportCSV()">CSVバックアップ</button>
@@ -439,7 +438,7 @@
         <div class="modal-content" id="modalContent" ontouchstart="if(!['INPUT','TEXTAREA','BUTTON'].includes(event.target.tagName))closeKeypad()">
             <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
                 <button onclick="shiftModalDate(-1)" style="background:none; border:none; font-size:1rem; cursor:pointer; padding:0 8px; color:#ccc;">◀</button>
-                <h3 id="selectedDateText" style="margin:0 0 10px; color:var(--dark)"></h3>
+                <h3 id="selectedDateText" style="margin:0 0 10px; color:#2c3e50;"></h3>
                 <button onclick="shiftModalDate(1)" style="background:none; border:none; font-size:1rem; cursor:pointer; padding:0 8px; color:#ccc;">▶</button>
             </div>
             <div class="input-row">
@@ -488,11 +487,11 @@
         </div>
     </div>
 
-    <!-- 累計モーダル -->
+    <!-- 年間累計モーダル -->
     <div id="cumModal" class="modal" onclick="if(event.target==this)this.style.display='none'">
         <div class="modal-content" style="max-width:500px; position:relative;">
             <button onclick="document.getElementById('cumModal').style.display='none'" style="position:absolute; top:12px; right:12px; background:none; border:none; font-size:1.4rem; cursor:pointer; color:#999; line-height:1;">×</button>
-            <h3 id="cumModalTitle" style="margin-top:0; text-align:center;">累計収支</h3>
+            <h3 id="cumModalTitle" style="margin-top:0; text-align:center;">年間収支</h3>
             <table class="cum-table">
                 <thead>
                     <tr><th>月</th><th>月間収支</th><th>累計収支</th></tr>
@@ -604,7 +603,7 @@
             if (Math.abs(diff) > threshold) {
                 isAnimating = true;
                 grid.classList.add('is-animating');
-                completeSwipeAnimation(diff > 0 ? -1 : 1);
+                animateMonthChange(diff > 0 ? -1 : 1);
             } else {
                 if (diff !== 0) {
                     grid.classList.add('is-animating');
@@ -634,8 +633,6 @@
                 });
             }, 300);
         }
-
-        function completeSwipeAnimation(diffMonth) { animateMonthChange(diffMonth); }
 
         function navChangeMonth(diffMonth) {
             if (isAnimating) return;
@@ -767,9 +764,9 @@
             const sTrades = document.getElementById('summaryTrades');
             const sPips   = document.getElementById('summaryPips');
             const sAmt    = document.getElementById('summaryAmount');
-            if (sTrades) displayMode === 0         ? sTrades.classList.remove('summary-hidden') : sTrades.classList.add('summary-hidden');
-            if (sPips)   displayMode <= 2           ? sPips.classList.remove('summary-hidden')   : sPips.classList.add('summary-hidden');
-            if (sAmt)    [0,1,3].includes(displayMode) ? sAmt.classList.remove('summary-hidden') : sAmt.classList.add('summary-hidden');
+            if (sTrades) displayMode === 0            ? sTrades.classList.remove('summary-hidden') : sTrades.classList.add('summary-hidden');
+            if (sPips)   displayMode <= 2             ? sPips.classList.remove('summary-hidden')   : sPips.classList.add('summary-hidden');
+            if (sAmt)    [0,1,3].includes(displayMode) ? sAmt.classList.remove('summary-hidden')   : sAmt.classList.add('summary-hidden');
         }
 
         function cycleDisplayMode() {
@@ -835,8 +832,8 @@
 
         function shiftModalDate(diff) {
             const content = document.getElementById('modalContent');
-            const exitX = diff > 0 ? '-110%' : '110%';
-            const enterX = diff > 0 ? '110%' : '-110%';
+            const exitX  = diff > 0 ? '-110%' : '110%';
+            const enterX = diff > 0 ? '110%'  : '-110%';
 
             content.classList.add('is-sliding');
             content.style.transform = `translateX(${exitX})`;
@@ -863,15 +860,14 @@
             }, 250);
         }
 
-        /* ===== 累計モーダル ===== */
+        /* ===== 年間累計モーダル ===== */
         function showCumulativeModal() {
             const targetYear = viewDate.getFullYear();
-            document.getElementById('cumModalTitle').innerText = `${targetYear}年 累計収支`;
+            document.getElementById('cumModalTitle').innerText = `${targetYear} 年間収支`;
             const tbody = document.getElementById('cumTableBody');
             tbody.innerHTML = "";
             let cumulative = 0;
-            const allMonthLabels = [], allCumPoints = [];
-            let lastDataMonth = -1;
+            const monthLabels = [], cumPoints = [];
 
             for (let m = 0; m < 12; m++) {
                 let monthSum = 0;
@@ -881,13 +877,12 @@
                     if (k.startsWith(ymPrefix)) monthSum += currentData[k].amount || 0;
                 });
                 cumulative += monthSum;
-                allMonthLabels.push(`${m + 1}月`);
-                allCumPoints.push(cumulative);
+                monthLabels.push(`${m + 1}月`);
+                cumPoints.push(cumulative);
 
                 // 12か月すべて行を追加。データなしの月は数値欄を空欄に
                 const row = document.createElement('tr');
                 if (hasData) {
-                    lastDataMonth = m;
                     row.innerHTML = `<td>${m + 1}月</td><td class="${monthSum < 0 ? 'negative' : ''}">${monthSum.toLocaleString()}</td><td class="${cumulative < 0 ? 'negative' : ''}">${cumulative.toLocaleString()}</td>`;
                 } else {
                     row.innerHTML = `<td>${m + 1}月</td><td></td><td></td>`;
@@ -895,26 +890,21 @@
                 tbody.appendChild(row);
             }
 
-            // グラフはデータがある最後の月まで描画し、残りはnullで空白に
-            const chartEnd = lastDataMonth >= 0 ? lastDataMonth + 1 : 12;
-            const chartPoints = allCumPoints.slice(0, chartEnd).concat(new Array(12 - chartEnd).fill(null));
-            const allZero = allCumPoints.slice(0, chartEnd).every(v => v === 0);
-
             document.getElementById('cumModal').style.display = 'flex';
             const ctx = document.getElementById('cumChart').getContext('2d');
             if (cumChartInstance) cumChartInstance.destroy();
+            const allZero = cumPoints.every(v => v === 0);
 
             cumChartInstance = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: allMonthLabels,
+                    labels: monthLabels,
                     datasets: [{
-                        data: chartPoints,
+                        data: cumPoints,
                         borderColor: '#3498db',
                         fill: { target: 'origin', above: 'rgba(52,152,219,0.15)', below: 'rgba(231,76,60,0.15)' },
                         tension: 0,
-                        borderWidth: 3,
-                        spanGaps: false
+                        borderWidth: 3
                     }]
                 },
                 options: {
@@ -942,34 +932,28 @@
             const lastDate = new Date(year, month + 1, 0).getDate();
             const labels = [], dataPoints = [];
             let cumulativeBalance = 0;
-            let lastDataDay = -1;
 
             for (let d = 1; d <= lastDate; d++) {
                 const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
                 labels.push(d);
-                if (currentData[dateKey]?.amount) lastDataDay = d;
                 cumulativeBalance += currentData[dateKey]?.amount || 0;
                 dataPoints.push(cumulativeBalance);
             }
 
-            // データがある最終日以降をnullに
-            const chartPoints = dataPoints.map((v, i) => (lastDataDay < 0 || i < lastDataDay) ? v : (i === lastDataDay - 1 ? v : null));
-
             document.getElementById('graphModal').style.display = 'flex';
             const ctx = document.getElementById('balanceChart').getContext('2d');
             if (myChart) myChart.destroy();
-            const allZero = dataPoints.slice(0, Math.max(lastDataDay, 1)).every(v => v === 0);
+            const allZero = dataPoints.every(v => v === 0);
 
             myChart = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: labels,
                     datasets: [{
-                        data: chartPoints,
+                        data: dataPoints,
                         borderColor: '#3498db',
                         fill: { target: 'origin', above: 'rgba(52,152,219,0.15)', below: 'rgba(231,76,60,0.15)' },
-                        tension: 0,
-                        spanGaps: false
+                        tension: 0
                     }]
                 },
                 options: {
