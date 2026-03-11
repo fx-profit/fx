@@ -116,7 +116,7 @@
         .data-container { display: flex; flex-direction: column; align-items: flex-end; justify-content: center; flex-grow: 1; width: 100%; overflow: hidden; }
         .day-data { text-align: center; width: 100%; line-height: 1.1; white-space: nowrap; letter-spacing: -0.02em; }
         .val-trades { font-size: 0.5rem; color: #7f8c8d; }
-        .val-pips { font-size: 0.6rem; color: #008080; margin-bottom: 3px; }
+        .val-pips { font-size: 0.6rem; color: var(--positive); margin-bottom: 3px; }
         .val-amount { font-size: 0.8rem; color: var(--primary); font-weight: bold; }
 
         .large-pips { 
@@ -291,7 +291,7 @@
                 <input type="number" id="tradesInput" inputmode="numeric" placeholder="0">
             </div>
             <div class="input-row">
-                <label style="color: #008080">獲得pips</label>
+                <label style="color: var(--positive)">獲得pips</label>
                 <input type="number" id="pipsInput" step="0.1" inputmode="decimal" placeholder="0.0" oninput="autoCalcLot()">
             </div>
             <div class="input-row">
