@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -537,6 +538,7 @@
             if (isTouchDevice) {
                 activeInputId = id;
                 const input = document.getElementById(id);
+                input.type = 'text';
                 input.readOnly = true;
                 document.getElementById('customKeypad').style.display = 'block';
                 input.focus();
@@ -547,6 +549,10 @@
         }
 
         function closeKeypad() {
+            if (activeInputId) {
+                const input = document.getElementById(activeInputId);
+                if (input) input.type = 'number';
+            }
             document.getElementById('customKeypad').style.display = 'none';
             activeInputId = null;
         }
@@ -554,37 +560,26 @@
         function kpInput(val) {
             if (!activeInputId) return;
             const input = document.getElementById(activeInputId);
-            // type="number"はドットを含む途中の文字列を拒否するためtextに切り替えて入力
-            const prevType = input.type;
-            input.type = 'text';
-            if (val === '.' && input.value.includes('.')) {
-                input.type = prevType;
-                return;
-            }
+            if (val === '.' && input.value.includes('.')) return;
             input.value += val;
-            input.type = prevType;
             autoCalcLot();
         }
 
         function kpDelete() {
             if (!activeInputId) return;
             const input = document.getElementById(activeInputId);
-            input.type = 'text';
             input.value = input.value.slice(0, -1);
-            input.type = 'number';
             autoCalcLot();
         }
 
         function kpToggleMinus() {
             if (!activeInputId) return;
             const input = document.getElementById(activeInputId);
-            input.type = 'text';
             if (input.value.startsWith('-')) {
                 input.value = input.value.substring(1);
             } else {
                 input.value = input.value !== "" ? '-' + input.value : '-';
             }
-            input.type = 'number';
             autoCalcLot();
         }
 
