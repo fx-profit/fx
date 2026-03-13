@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="author" content="Hiroro">
     <meta name="description" content="FXトレーダー専用の収支管理アプリです。収支金額だけでなくトレード回数やpips表示にも切り替え可能">
-    <title>FX Profit</title>
+    <title>FX日記</title>
     <link rel="icon" href="favicon.png" type="image/png">
     <link rel="apple-touch-icon" href="favicon.png">
     <link rel="manifest" href="manifest.json">
@@ -403,7 +403,7 @@
 <body>
 
     <header>
-        <h1 id="appTitle" contenteditable="true" spellcheck="false">FX収支管理</h1>
+        <h1 id="appTitle" contenteditable="true" spellcheck="false">FX日記</h1>
     </header>
 
     <div class="container">
@@ -999,7 +999,7 @@
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = `FX収支_${new Date().toISOString().slice(0, 10)}.csv`;
+            link.download = `FX日記_${new Date().toISOString().slice(0, 10)}.csv`;
             link.click();
         }
 
