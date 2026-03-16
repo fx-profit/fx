@@ -43,9 +43,9 @@
 
         header {
             width: 100%;
-            background: linear-gradient(to bottom, #004d40 0%, #004d40 25%, #008080 25%, #008080 100%);
+            background: var(--header-bg);
             color: white;
-            padding-top: calc(env(safe-area-inset-top, 20px) + 35px);
+            padding-top: calc(env(safe-area-inset-top, 20px) + 15px);
             padding-bottom: 15px;
             text-align: center;
             box-shadow: 0 2px 8px rgba(0,0,0,0.2);
@@ -196,8 +196,8 @@
         }
 
         .val-trades { font-size: 0.5rem; color: #7f8c8d; }
-        .val-pips   { font-size: 0.6rem; color: var(--positive); margin-bottom: 3px; letter-spacing: -0.02em; }
-        .val-amount { font-size: 0.8rem; color: var(--primary); font-weight: bold; letter-spacing: -0.02em; }
+        .val-pips   { font-size: 0.6rem; color: var(--positive); margin-bottom: 3px; letter-spacing: -0.02em;}
+        .val-amount { font-size: 0.8rem; color: var(--primary); font-weight: bold; letter-spacing: -0.02em;}
 
         .large-pips {
             font-size: 0.85rem !important;
@@ -344,7 +344,7 @@
             background: none;
             border: none;
             cursor: pointer;
-            padding: 4px 10px;
+            padding: 2px 10px;
             position: absolute;
             right: 10px;
             bottom: 15px;
@@ -381,15 +381,6 @@
             z-index: 2000;
             box-sizing: border-box;
             animation: slideUp 0.2s ease-out;
-        }
-
-        .done-link {
-            color: #999;
-            transform: scaleX(2);
-            font-weight: bold;
-            font-size: 0.8rem;
-            cursor: pointer;
-            padding: 5px 30px;
         }
 
         .keypad-grid {
